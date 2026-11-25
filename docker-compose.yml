@@ -1,0 +1,15 @@
+# Optional local services. Not required when MONGODB_URI points at MongoDB Atlas.
+services:
+  mongodb:
+    image: mongodb/mongodb-atlas-local:8.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+  valkey:
+    image: valkey/valkey:8
+    ports:
+      - "6379:6379"
+
+volumes:
+  mongo-data:

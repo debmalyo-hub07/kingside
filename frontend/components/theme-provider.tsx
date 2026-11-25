@@ -1,0 +1,9 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+"use client";
+
+import { ThemeProvider as NextThemesProvider } from "next-themes";
+import type * as React from "react";
+
+export function ThemeProvider(props: React.ComponentProps<typeof NextThemesProvider>) {
+  return <NextThemesProvider {...props} />;
+}

@@ -1,0 +1,143 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * "Midnight emerald" design tokens. Kingside's own palette — do not copy Chess.com/Lichess colors
+ * (docs/LICENSING.md). Dark is the signature look; light mode keeps the same accents.
+ */
+:root {
+  --radius: 0.85rem;
+  --background: #f6f8fb;
+  --foreground: #0f172a;
+  --card: rgb(255 255 255 / 0.75);
+  --card-solid: #ffffff;
+  --card-foreground: var(--foreground);
+  --popover: #ffffff;
+  --popover-foreground: var(--foreground);
+  /* emerald-700: 5.5:1 against white text (WCAG AA); #059669 was only 3.8:1. */
+  --primary: #047857;
+  --primary-foreground: #ffffff;
+  --secondary: #eef2f7;
+  --secondary-foreground: var(--foreground);
+  --muted: #eef2f7;
+  --muted-foreground: #5b6b82;
+  --accent: #e3f5ee;
+  --accent-foreground: var(--foreground);
+  --gold: #b7791f;
+  --destructive: #dc2626;
+  --border: rgb(15 23 42 / 0.1);
+  --input: rgb(15 23 42 / 0.14);
+  --ring: #047857;
+  --glow-emerald: rgb(16 185 129 / 0.16);
+  --glow-gold: rgb(245 197 107 / 0.18);
+}
+
+.dark {
+  --background: #0b0f17;
+  --foreground: #e8edf5;
+  --card: rgb(255 255 255 / 0.04);
+  --card-solid: #121826;
+  --card-foreground: var(--foreground);
+  --popover: #121826;
+  --popover-foreground: var(--foreground);
+  --primary: #34d399;
+  --primary-foreground: #04120c;
+  --secondary: rgb(255 255 255 / 0.06);
+  --secondary-foreground: var(--foreground);
+  --muted: rgb(255 255 255 / 0.06);
+  --muted-foreground: #94a3b8;
+  --accent: rgb(52 211 153 / 0.12);
+  --accent-foreground: var(--foreground);
+  --gold: #f5c56b;
+  --destructive: #f87171;
+  --border: rgb(255 255 255 / 0.08);
+  --input: rgb(255 255 255 / 0.12);
+  --ring: #34d399;
+  --glow-emerald: rgb(52 211 153 / 0.14);
+  --glow-gold: rgb(245 197 107 / 0.1);
+}
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-instrument-serif);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-solid: var(--card-solid);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-gold: var(--gold);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  /* Tailwind v4 leaves buttons with the default arrow; everything clickable shows a hand. */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [role="tab"],
+  [role="switch"],
+  select:not(:disabled),
+  summary,
+  label:has(> input:not(:disabled)),
+  input[type="checkbox"]:not(:disabled),
+  input[type="radio"]:not(:disabled),
+  input[type="range"]:not(:disabled) {
+    cursor: pointer;
+  }
+  :disabled {
+    cursor: not-allowed;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    /* Safety net: nothing may cause sideways scrolling on phones (clip keeps the sticky header working). */
+    overflow-x: clip;
+    /* Soft emerald + gold glows behind everything. */
+    background-image:
+      radial-gradient(60rem 40rem at -10% -10%, var(--glow-emerald), transparent 60%),
+      radial-gradient(50rem 35rem at 110% 110%, var(--glow-gold), transparent 60%);
+    background-attachment: fixed;
+  }
+}
+
+@layer components {
+  /* Frosted-glass surface used by cards and panels. */
+  .glass {
+    @apply border bg-card backdrop-blur-xl;
+  }
+  .text-gradient {
+    background: linear-gradient(100deg, var(--primary), var(--gold));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}

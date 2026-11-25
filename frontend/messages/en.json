@@ -1,0 +1,1479 @@
+{
+  "common": {
+    "loading": "Loading…",
+    "soon": "Soon",
+    "skipToContent": "Skip to content"
+  },
+  "nav": {
+    "groups": {
+      "analyze": "Analyze",
+      "train": "Train",
+      "learn": "Learn"
+    },
+    "items": {
+      "analysis": {
+        "title": "Analysis board",
+        "description": "Stockfish 19 evaluation, best lines and arrows"
+      },
+      "editor": {
+        "title": "Board editor",
+        "description": "Set up any position and export FEN"
+      },
+      "review": {
+        "title": "Match Analysis",
+        "description": "Import from Lichess or Chess.com, every move rated"
+      },
+      "library": {
+        "title": "My games",
+        "description": "Played, reviewed and saved games on this device"
+      },
+      "puzzles": {
+        "title": "Puzzles",
+        "description": "Rated tactics trainer with themes"
+      },
+      "daily": {
+        "title": "Daily puzzle",
+        "description": "One new puzzle for everyone, every day"
+      },
+      "play": {
+        "title": "Play bots",
+        "description": "Practice from beginner to full strength"
+      },
+      "openings": {
+        "title": "Openings",
+        "description": "Names, book moves and statistics"
+      },
+      "endgames": {
+        "title": "Endgames",
+        "description": "Perfect play from 7-piece tablebases"
+      },
+      "practice": {
+        "title": "Practice positions",
+        "description": "Train key positions against the engine"
+      },
+      "settings": {
+        "title": "Settings",
+        "description": "Board, pieces, sounds, notation and engine"
+      },
+      "insights": {
+        "title": "Insights",
+        "description": "Your accuracy and mistakes across games"
+      }
+    },
+    "menu": "Menu",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "search": "Search",
+    "settings": "Settings",
+    "toggleTheme": "Toggle color theme",
+    "dock": {
+      "label": "Main tools",
+      "analysis": "Analyze",
+      "review": "Review",
+      "puzzles": "Puzzles",
+      "play": "Play",
+      "practice": "Practice"
+    }
+  },
+  "footer": {
+    "tagline": "Free, open-source chess analysis. No account, no paywall, no trackers.",
+    "license": "Debmalyo Barman · Kingside · AGPL-3.0-or-later",
+    "credits": "Engine: Stockfish 19 (GPL-3.0) · Piece sets by their authors · Explorer and tablebase data from lichess.org",
+    "engineLabel": "Engine:",
+    "piecesLabel": "Piece sets by their authors",
+    "dataFrom": "Explorer & tablebase data from",
+    "settings": "Settings",
+    "licenses": "Licenses",
+    "source": "Source code"
+  },
+  "palette": {
+    "placeholder": "Search pages…",
+    "empty": "No matching page.",
+    "title": "Go to page",
+    "description": "Type to search, use the arrow keys and Enter to open a page.",
+    "lightMode": "Switch to light mode",
+    "darkMode": "Switch to dark mode",
+    "appearance": "Appearance"
+  },
+  "explorer": {
+    "title": "Opening explorer",
+    "source": "Data source",
+    "sources": {
+      "masters": "Masters",
+      "lichess": "Online",
+      "book": "Book"
+    },
+    "move": "Move",
+    "share": "Share of games",
+    "games": "Games",
+    "results": "White / draw / Black",
+    "noGames": "No games reached this position.",
+    "outOfBook": "No book moves from this position.",
+    "bookMove": "book move",
+    "topGames": "Top games",
+    "attribution": "Statistics from the lichess.org opening explorer.",
+    "fallbackNoAccess": "Game statistics aren't set up on this server, so Kingside's own opening book (CC0) is shown.",
+    "fallbackRateLimited": "The statistics service is busy right now. Showing Kingside's opening book instead.",
+    "fallbackError": "Game statistics couldn't be loaded. Showing Kingside's opening book instead."
+  },
+  "tablebase": {
+    "title": "Endgame tablebase",
+    "loading": "Looking up the tablebase…",
+    "offline": "Can't reach the Kingside server for the tablebase.",
+    "error": "Tablebase lookup failed. Try again in a moment.",
+    "white": "White",
+    "black": "Black",
+    "verdict": {
+      "win": "{side} wins",
+      "loss": "{side} loses",
+      "draw": "Draw",
+      "unknown": "Unknown"
+    },
+    "short": {
+      "win": "Win",
+      "loss": "Loss",
+      "draw": "Draw",
+      "unknown": "?"
+    },
+    "dtm": "Mate in {n}",
+    "dtz": "DTZ {n}",
+    "mate": "Checkmate",
+    "checkmate": "Checkmate",
+    "stalemate": "Stalemate",
+    "insufficient": "Draw — insufficient material",
+    "fiftyMove": "50-move rule",
+    "fiftyMoveHint": "Winnable with perfect play, but the 50-move rule turns it into a draw.",
+    "zeroing": "resets 50-move count",
+    "zeroingHint": "A capture or pawn move: the 50-move counter starts again.",
+    "attribution": "Syzygy tablebase via lichess.org."
+  },
+  "share": {
+    "button": "Share",
+    "title": "Share",
+    "description": "Send a link, embed the board on a site, or download the game.",
+    "close": "Close",
+    "copy": "Copy",
+    "copied": "Copied",
+    "copyFailed": "Couldn't copy — select the text and copy it yourself.",
+    "linkTitle": "Link",
+    "createLink": "Create short link",
+    "linkNote": "Links work for one year. Anyone with the link can view the game.",
+    "startAtMove": "Open at move {move}{side}",
+    "shareSheet": "Share…",
+    "shareTitle": "Chess game on Kingside",
+    "embedTitle": "Embed on a website",
+    "positionTitle": "This position",
+    "copyAnalysisLink": "Copy analysis link",
+    "downloadPng": "Image (PNG)",
+    "sharePng": "Share image",
+    "gameTitle": "Whole game",
+    "copyPgn": "Copy PGN",
+    "downloadPgn": "Download .pgn",
+    "downloadGif": "Animated GIF",
+    "gifProgress": "Making GIF… {pct}%",
+    "gifCapped": "Very long game: the GIF shows the first {n} positions.",
+    "errors": {
+      "backend_unreachable": "Can't reach the Kingside server, so no link can be made. Everything else here still works.",
+      "rate_limited": "Too many links in a short time. Wait a minute and try again.",
+      "too_many_moves": "This game is too long to share as a link.",
+      "generic": "Couldn't create the link. Try again in a moment.",
+      "image": "Couldn't create the image in this browser."
+    }
+  },
+  "viewer": {
+    "loading": "Loading game…",
+    "notFound": "This link doesn't exist or has expired.",
+    "offline": "Can't reach the Kingside server.",
+    "error": "Couldn't load this game. Try again in a moment.",
+    "goAnalysis": "Open the analysis board",
+    "white": "White",
+    "black": "Black",
+    "moves": "Moves",
+    "first": "First move",
+    "previous": "Previous move",
+    "next": "Next move",
+    "last": "Last move",
+    "flip": "Flip board",
+    "boardLabel": "Chess board: {white} against {black}",
+    "accuracy": "Accuracy (White / Black)",
+    "analyze": "Analyze",
+    "review": "Review",
+    "save": "Save",
+    "saved": "Saved",
+    "openOnKingside": "Open on Kingside",
+    "vs": "vs"
+  },
+  "library": {
+    "title": "My games",
+    "subtitle": "Games you played, reviewed or saved. They stay in this browser — nothing is uploaded.",
+    "loading": "Loading your games…",
+    "empty": "No games yet.",
+    "emptyPlay": "Play a bot",
+    "emptyReview": "Review a game",
+    "search": "Search games",
+    "searchPlaceholder": "Player or opening…",
+    "source": "Source",
+    "result": "Result",
+    "sources": {
+      "all": "All",
+      "bot": "Bot game",
+      "review": "Reviewed",
+      "analysis": "Analysis",
+      "shared": "Shared",
+      "import": "Imported"
+    },
+    "tableCaption": "Saved games",
+    "players": "Players",
+    "opening": "Opening",
+    "date": "Saved",
+    "actions": "Actions",
+    "analyze": "Analyze",
+    "review": "Review",
+    "share": "Share",
+    "selectAll": "Select all shown games",
+    "select": "Select {white} – {black}",
+    "selected": "{n, plural, one {# game selected} other {# games selected}}",
+    "exportAll": "Export {n, plural, one {# game} other {# games}} (.pgn)",
+    "exportSelected": "Export .pgn",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "confirmDelete": "Delete {n, plural, one {# game} other {# games}} from this device?",
+    "noMatch": "No games match these filters.",
+    "showMore": "Show more ({n} left)",
+    "openFailed": "This game couldn't be opened."
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Saved in this browser only.",
+    "look": {
+      "title": "Look",
+      "theme": "Color theme",
+      "dark": "Dark",
+      "light": "Light",
+      "system": "System"
+    },
+    "sound": {
+      "title": "Sound",
+      "enabled": "Sounds on",
+      "hint": "Moves, captures, checks and game events. Made by Kingside, no audio files.",
+      "volume": "Volume",
+      "names": {
+        "move": "Move",
+        "capture": "Capture",
+        "check": "Check",
+        "castle": "Castle",
+        "promote": "Promotion",
+        "gameEnd": "Game end",
+        "correct": "Correct",
+        "wrong": "Wrong",
+        "gameStart": "Game start",
+        "lowTime": "Low time"
+      }
+    },
+    "moves": {
+      "title": "Moves",
+      "notation": "Notation",
+      "san": "Letters",
+      "figurine": "Figurines",
+      "input": "Type moves on the analysis board",
+      "inputHint": "Adds a box under the board: type Nf3, exd5, O-O or g1f3 and press Enter."
+    },
+    "engine": {
+      "title": "Engine and explorer",
+      "enabled": "Engine on in the analysis board",
+      "depth": "Depth",
+      "lines": "Lines",
+      "threads": "Threads",
+      "hash": "Hash memory",
+      "auto": "Auto",
+      "explorer": "Opening explorer opens on",
+      "masters": "Masters",
+      "lichess": "Online games",
+      "book": "Opening book",
+      "net": "Analysis board engine (match analysis always uses the full net)",
+      "netLite": "Quick · lite net, ~2 MB, about 2× faster",
+      "netFull": "Max · full NNUE, 99 MB, strongest"
+    },
+    "language": {
+      "title": "Language",
+      "label": "Language",
+      "more": "More languages later."
+    },
+    "licenses": {
+      "title": "Open Source & Engine Licenses",
+      "copyright": "Copyright © 2026 Debmalyo Barman · Kingside · AGPL-3.0-or-later",
+      "summary": "Kingside is free, open-source software built on GPL/AGPL chess engines, chess rules libraries, and community data.",
+      "toggleShow": "Show third-party & engine attributions",
+      "toggleHide": "Hide third-party & engine attributions",
+      "sourceCode": "Kingside source repository",
+      "engineCopy": "Bundled Stockfish license text (COPYING.txt)",
+      "items": {
+        "stockfish": {
+          "name": "Stockfish 19 (sf_19)",
+          "license": "GPL-3.0",
+          "note": "Official native & NNUE chess engine source"
+        },
+        "stockfishJs": {
+          "name": "stockfish.js 19.0.1",
+          "license": "GPL-3.0 (engine) · MIT (wrapper)",
+          "note": "Browser WebAssembly engine build"
+        },
+        "chessground": {
+          "name": "chessground 9.2.1",
+          "license": "GPL-3.0-or-later",
+          "note": "Interactive chessboard UI"
+        },
+        "chessops": {
+          "name": "chessops 0.15.1",
+          "license": "GPL-3.0-or-later",
+          "note": "Chess rules, FEN/PGN parsing & move generation"
+        },
+        "lichess": {
+          "name": "lichess.org Data & APIs",
+          "license": "CC0-1.0 & Lichess API terms",
+          "note": "Opening explorer, 7-piece Syzygy tablebases, Cloud Eval, puzzle database & chess-openings"
+        },
+        "pieces": {
+          "name": "Chess Piece Sets",
+          "license": "GPL-2.0+ / GPL-3.0+ / AGPL-3.0+ / Apache-2.0 / MIT / CC0 / CC-BY / CC-BY-SA",
+          "note": "14 sets from lichess-org/lila by their respective authors"
+        }
+      }
+    },
+    "data": {
+      "title": "Data on this device",
+      "privacy": "Kingside has no accounts. Your games, reviews, drills, puzzle rating and engine cache live in this browser only.",
+      "counts": "{games, plural, one {# saved game} other {# saved games}} · {evals, plural, one {# cached position} other {# cached positions}}",
+      "clearEvals": "Clear engine cache",
+      "clearGames": "Delete all saved games",
+      "resetSettings": "Reset settings",
+      "confirmTitle": "Confirm",
+      "confirm": {
+        "evals": "Clear all cached engine evaluations?",
+        "games": "Delete every saved game on this device? This can't be undone.",
+        "settings": "Reset all settings to their defaults?",
+        "training": "Delete review summaries (insights), drills from your games and practice progress?"
+      },
+      "done": {
+        "evals": "Engine cache cleared.",
+        "games": "Saved games deleted.",
+        "settings": "Settings reset.",
+        "training": "Insights, drills and practice progress cleared."
+      },
+      "yes": "Yes",
+      "cancel": "Cancel",
+      "clearTraining": "Clear insights, drills and practice progress"
+    },
+    "review": {
+      "title": "Match Analysis"
+    }
+  },
+  "moveInput": {
+    "label": "Move",
+    "placeholder": "e.g. Nf3",
+    "illegal": "“{move}” isn't a legal move here."
+  },
+  "offline": {
+    "title": "You're offline",
+    "body": "This page isn't saved for offline use yet. The analysis board and engine work offline once you've opened them.",
+    "cta": "Open the analysis board"
+  },
+  "errors": {
+    "position": {
+      "ERR_FEN": "Invalid FEN",
+      "ERR_BOARD": "Invalid FEN: the board part is malformed",
+      "ERR_POCKETS": "Invalid FEN: pockets are not supported",
+      "ERR_TURN": "Invalid FEN: side to move must be w or b",
+      "ERR_CASTLING": "Invalid FEN: the castling field is malformed",
+      "ERR_EP_SQUARE": "Invalid FEN: the en passant square is malformed",
+      "ERR_HALFMOVES": "Invalid FEN: the halfmove clock is malformed",
+      "ERR_FULLMOVES": "Invalid FEN: the move number is malformed",
+      "ERR_EMPTY": "The board is empty",
+      "ERR_KINGS": "Each side needs exactly one king",
+      "ERR_OPPOSITE_CHECK": "The side not to move is in check",
+      "ERR_PAWNS_ON_BACKRANK": "Pawns cannot stand on the first or last rank",
+      "ERR_IMPOSSIBLE_CHECK": "This check could not happen in a real game",
+      "ERR_VARIANT": "This position is not valid for standard chess",
+      "ERR_ILLEGAL": "Illegal position",
+      "ERR_NO_GAME": "No game found in that PGN",
+      "ERR_PGN_START": "The PGN's start position is invalid",
+      "unknown": "Could not read that PGN or FEN.",
+      "ERR_NO_MOVES": "That game has no moves to review.",
+      "ERR_TOO_SHORT": "This game needs at least 2 half-moves to review."
+    }
+  },
+  "engine": {
+    "title": "Engine",
+    "status": "depth {depth}/{target} · {threads, plural, one {# thread} other {# threads}}",
+    "done": "done",
+    "off": "off",
+    "depth": "Depth",
+    "lines": "Lines",
+    "playMove": "Play this move",
+    "loading": "Loading engine…",
+    "failed": "Engine failed to start. Reload or try Quick mode.",
+    "playLineTo": "Play the line up to this move",
+    "net": "Engine net",
+    "nets": {
+      "lite": "Quick",
+      "full": "Max"
+    },
+    "netHint": {
+      "lite": "Lite net: loads in a moment, about twice as fast",
+      "full": "Full NNUE net: strongest, 99 MB download once"
+    },
+    "evaluation": "Evaluation",
+    "best": "Best",
+    "meter": "depth {depth}/{target} · {nps} nodes/s · {threads, plural, one {# thread} other {# threads}}",
+    "downloadLabel": "Engine download",
+    "depthLabel": "Search depth",
+    "downloading": "Downloading engine {pct}% · {size}, first time only",
+    "pace": "Search length",
+    "paces": {
+      "glance": "Glance",
+      "steady": "Steady",
+      "deep": "Deep",
+      "endless": "Endless"
+    },
+    "fewerLines": "Fewer lines",
+    "moreLines": "More lines",
+    "addLine": "Add the next {n} moves of this line"
+  },
+  "analysis": {
+    "white": "White",
+    "black": "Black",
+    "over": {
+      "mateWhite": "Checkmate — White wins",
+      "mateBlack": "Checkmate — Black wins",
+      "stalemate": "Stalemate — draw",
+      "insufficient": "Draw by insufficient material"
+    },
+    "tb": {
+      "win": "Tablebase: White wins",
+      "loss": "Tablebase: Black wins",
+      "draw": "Tablebase: draw"
+    },
+    "sidePanel": "Side panel",
+    "tabs": {
+      "moves": "Moves",
+      "explorer": "Explorer",
+      "tablebase": "Tablebase"
+    },
+    "first": "First move",
+    "previous": "Previous move",
+    "next": "Next move",
+    "last": "Last move",
+    "flip": "Flip board",
+    "deleteFromHere": "Delete from here",
+    "deleteFromHereHint": "Delete this move and everything after it",
+    "review": "Review",
+    "reviewHint": "Rate every move of the main line",
+    "save": "Save to My games",
+    "saved": "Saved to My games",
+    "edit": "Edit this position",
+    "noMoves": "Make a move on the board to start.",
+    "moves": "Moves",
+    "mobileControls": "Board navigation",
+    "jumpEngine": "Engine",
+    "jumpMoves": "Moves",
+    "load": {
+      "button": "Load PGN or FEN",
+      "title": "Load PGN or FEN",
+      "description": "Paste a full game (PGN) or a single position (FEN). This replaces the current analysis.",
+      "tooLarge": "Input is too large (max 1 MB).",
+      "submit": "Load",
+      "close": "Close",
+      "or": "or"
+    }
+  },
+  "board": {
+    "title": "Board appearance",
+    "description": "Choose board colors, pieces and display options.",
+    "close": "Close",
+    "board": "Board",
+    "pieces": "Pieces",
+    "coordinates": "Coordinates",
+    "arrows": "Engine arrows",
+    "animation": "Animation",
+    "speed": {
+      "off": "Off",
+      "fast": "Fast",
+      "normal": "Normal",
+      "slow": "Slow"
+    },
+    "themes": {
+      "walnut": "Walnut",
+      "maple": "Maple",
+      "slate": "Slate",
+      "sage": "Sage",
+      "ocean": "Ocean",
+      "rosewood": "Rosewood",
+      "graphite": "Graphite",
+      "midnight": "Midnight",
+      "marble": "Marble",
+      "amethyst": "Amethyst"
+    },
+    "label": "Chess board",
+    "promotion": {
+      "choose": "Choose promotion piece",
+      "cancel": "Cancel promotion",
+      "to": {
+        "queen": "Promote to queen",
+        "rook": "Promote to rook",
+        "bishop": "Promote to bishop",
+        "knight": "Promote to knight"
+      }
+    },
+    "evaluation": "Evaluation",
+    "even": "Even",
+    "graph": "Position in game"
+  },
+  "speech": {
+    "pieces": {
+      "K": "King",
+      "Q": "Queen",
+      "R": "Rook",
+      "B": "Bishop",
+      "N": "Knight"
+    },
+    "promoted": {
+      "Q": "queen",
+      "R": "rook",
+      "B": "bishop",
+      "N": "knight"
+    },
+    "pawn": "Pawn",
+    "filePawn": "{file} pawn",
+    "takes": "takes {square}",
+    "to": "to {square}",
+    "promotesTo": "promotes to {piece}",
+    "castleKingside": "Castles kingside",
+    "castleQueenside": "Castles queenside",
+    "check": "check",
+    "checkmate": "checkmate",
+    "moveWhite": "{n}. White: {text}",
+    "moveBlack": "{n}. Black: {text}"
+  },
+  "editor": {
+    "pieces": {
+      "white": {
+        "king": "White king",
+        "queen": "White queen",
+        "rook": "White rook",
+        "bishop": "White bishop",
+        "knight": "White knight",
+        "pawn": "White pawn"
+      },
+      "black": {
+        "king": "Black king",
+        "queen": "Black queen",
+        "rook": "Black rook",
+        "bishop": "Black bishop",
+        "knight": "Black knight",
+        "pawn": "Black pawn"
+      }
+    },
+    "move": "Move",
+    "erase": "Erase",
+    "flip": "Flip",
+    "hint": "Drag pieces from the trays, or pick one and click squares. Drag a piece off the board to remove it.",
+    "start": "Start position",
+    "clear": "Clear board",
+    "sideToMove": "Side to move",
+    "whiteToMove": "White to move",
+    "blackToMove": "Black to move",
+    "castling": "Castling",
+    "castle": {
+      "K": "White O-O",
+      "Q": "White O-O-O",
+      "k": "Black O-O",
+      "q": "Black O-O-O"
+    },
+    "legal": "Position is legal.",
+    "analyze": "Analyze"
+  },
+  "apiErrors": {
+    "user_not_found": "No player with that username.",
+    "upstream_unavailable": "That site didn't answer. Try again in a moment.",
+    "upstream_rate_limited": "That site is limiting requests. Wait a minute and try again.",
+    "rate_limited": "Too many requests. Wait a minute and try again.",
+    "invalid_request": "That request wasn't valid.",
+    "backend_unreachable": "Can't reach the Kingside server. Is the backend running?",
+    "no_puzzle": "No puzzle matches these settings.",
+    "not_found": "Not found.",
+    "generic": "Something went wrong. Try again in a moment."
+  },
+  "review": {
+    "presets": {
+      "fast": "Fast",
+      "standard": "Standard",
+      "deep": "Deep"
+    },
+    "errors": {
+      "analysisStopped": "The analysis stopped unexpectedly. Please try again."
+    },
+    "import": {
+      "title": "Match Analysis",
+      "subtitle": "Every move rated by Stockfish 19, accuracy for both players, and the moments that decided the game.",
+      "source": "Game source",
+      "tabs": {
+        "lichess": "Lichess",
+        "chesscom": "Chess.com",
+        "pgn": "Paste PGN"
+      },
+      "vs": "vs",
+      "outcome": {
+        "draw": "Draw",
+        "unfinished": "Unfinished",
+        "won": "Won",
+        "lost": "Lost"
+      },
+      "badUsername": "Usernames use letters, numbers, - and _ (2–30 characters).",
+      "pgnTooLarge": "PGN is too large (max 1 MB).",
+      "fileTooLarge": "PGN file is too large (max 1 MB).",
+      "openFile": "Open .pgn file",
+      "reviewThis": "Review this game",
+      "firstGame": "If the file holds several games, the first one is reviewed.",
+      "usernameLichess": "Lichess username",
+      "usernameChesscom": "Chess.com username",
+      "username": "Username",
+      "find": "Find games",
+      "depth": "Strength",
+      "recent": "Recent games",
+      "recentOf": "Recent games of {name}",
+      "noneFound": "No standard games found for {name}."
+    },
+    "progress": {
+      "title": "Reviewing your game…",
+      "players": "{white} vs {black}",
+      "progress": "Analysis progress",
+      "status": "{done} / {total} positions · {engine} · {nodes} nodes each",
+      "cancel": "Cancel",
+      "recheck": "Second look at the critical moments · {done} / {total}",
+      "downloading": "Downloading the review engine · {pct}% (first review only)"
+    },
+    "report": {
+      "accuracy": "accuracy",
+      "precision": "precision",
+      "classicAccuracy": "Classic accuracy",
+      "precisionLabel": "Kingside precision",
+      "precisionNote": "Complexity-weighted expected-points score calibrated by Kingside.",
+      "performance": "performance",
+      "tooShort": "too short to rate",
+      "movesByType": "Moves by type",
+      "byPhase": "Accuracy by phase",
+      "byPhasePrecision": "Precision by phase",
+      "phases": {
+        "opening": "Opening",
+        "middlegame": "Middlegame",
+        "endgame": "Endgame"
+      },
+      "keyMoments": "Key moments",
+      "performanceNote": "Rating that typically plays at this accuracy (fitted on 4,222 analysed Lichess games), moved part of the way from the player's own rating when the game has one. One game is a noisy signal.",
+      "checkmate": "Checkmate.",
+      "evaluation": "Evaluation {score}.",
+      "start": "Start",
+      "previous": "Previous move",
+      "next": "Next move",
+      "end": "End",
+      "flip": "Flip board",
+      "retry": {
+        "pending": "Your turn: find a better move on the board.",
+        "correct": "{move} — that's the best move. Well found!",
+        "again": "Try again",
+        "back": "Back to game",
+        "start": "Retry this move",
+        "checking": "Checking {move}…",
+        "alsoGood": "{move} works too — nearly as good as {best}.",
+        "wrongNoBest": "{move} isn't it. Try again, or ask for a hint.",
+        "hint": "Hint",
+        "show": "Show move"
+      },
+      "hint": "Use ← → or click a move to step through the game. Click the graph to jump.",
+      "tabs": {
+        "summary": "Summary"
+      },
+      "newReview": "New review",
+      "analyzePosition": "Analyze position",
+      "original": "Original game",
+      "captured": "Captured pieces and material lead",
+      "headline": {
+        "brilliant": "{move} is brilliant!",
+        "great": "{move} is a great move",
+        "best": "{move} is the best move",
+        "excellent": "{move} is excellent",
+        "good": "{move} is a good move",
+        "book": "{move} is a known opening move",
+        "forced": "{move} was the only legal move",
+        "inaccuracy": "{move} is an inaccuracy",
+        "mistake": "{move} is a mistake",
+        "miss": "{move} misses a chance",
+        "blunder": "{move} is a blunder"
+      },
+      "reasons": {
+        "mates": "Forces checkmate in {n}.",
+        "allowsMate": "Allows checkmate in {n}.",
+        "missedMate": "There was a forced checkmate in {n}.",
+        "hangs": "Leaves the {piece} on {square} to be taken.",
+        "allowsFork": "Allows a {piece} fork from {square}.",
+        "pins": "Pins the {piece} on {square} against the {target}.",
+        "allowsPin": "Allows the {piece} on {square} to be pinned against the {target}.",
+        "skewers": "Skewers the {piece} on {square} to expose the {target}.",
+        "allowsSkewer": "Allows a skewer against the {piece} on {square} and the {target}.",
+        "discoveredAttack": "Uncovers a discovered attack with the {piece} from {square}.",
+        "allowsDiscoveredAttack": "Allows a discovered attack from the {piece} on {square}.",
+        "doubleCheck": "Delivers a double check.",
+        "allowsDoubleCheck": "Allows a double check.",
+        "trapsPiece": "Traps the {piece} on {square} with no safe escape.",
+        "trappedPiece": "Leaves the {piece} on {square} trapped.",
+        "backRank": "Creates a decisive back-rank threat from {square}.",
+        "allowsBackRank": "Allows a back-rank threat from {square}.",
+        "deflection": "Deflects the {piece} on {square} from defending.",
+        "allowsDeflection": "Allows the {piece} on {square} to be deflected.",
+        "missedTactic": "{motif, select, pin {The best move sets up a pin.} skewer {The best move sets up a skewer.} discoveredAttack {The best move uncovers a discovered attack.} doubleCheck {The best move delivers a double check.} trappedPiece {The best move traps an opponent piece.} backRank {The best move creates a back-rank threat.} deflection {The best move wins by deflection.} other {The best move finds a tactic.}}",
+        "losesMaterial": "Loses about {pawns, plural, one {# pawn} other {# pawns}} of material.",
+        "bestWinsMaterial": "The best move wins about {pawns, plural, one {# pawn} other {# pawns}} of material.",
+        "sacrifice": "Sacrifices the {piece} on {square} — and it works.",
+        "onlyMove": "Every other move was clearly worse.",
+        "punishes": "Takes advantage of the opponent's error.",
+        "swing": "The position goes from {from} to {to}."
+      },
+      "pieces": {
+        "pawn": "pawn",
+        "knight": "knight",
+        "bishop": "bishop",
+        "rook": "rook",
+        "queen": "queen",
+        "king": "king"
+      },
+      "outlook": {
+        "lost": "losing",
+        "worse": "slightly worse",
+        "equal": "equal",
+        "better": "better",
+        "winning": "winning"
+      },
+      "evalChange": "Evaluation before → after the move",
+      "bestLine": "Best:",
+      "punishLine": "Punished by:",
+      "replyLine": "Then:",
+      "backToGame": "Back to the game",
+      "previewBest": "Engine's best line",
+      "previewReply": "Engine continuation",
+      "winChance": "Win chance {from}% → {to}%",
+      "depth": "depth {depth}",
+      "timeSpent": "{s} spent",
+      "nextKey": "Next key moment",
+      "firstKey": "Go to the first key moment",
+      "bookUntil": "Both sides followed opening theory until move {n}.",
+      "acpl": "Avg. loss",
+      "acplLong": "Average centipawn loss per move (lower is better)",
+      "coachSummary": "Summary",
+      "summary": {
+        "clean": "no mistakes or blunders.",
+        "errors": "{n, plural, one {# serious error} other {# serious errors}} (mistakes, misses and blunders).",
+        "phases": "Strongest in the {best}, weakest in the {worst}.",
+        "highlights": "{n, plural, one {# standout move} other {# standout moves}} (brilliant or great).",
+        "turning": "The game turned on"
+      },
+      "phaseWords": {
+        "opening": "opening",
+        "middlegame": "middlegame",
+        "endgame": "endgame"
+      },
+      "lastBook": "The last move of opening theory — from here on, the players are on their own.",
+      "lastBookNamed": "The last move of opening theory ({opening}) — from here on, the players are on their own.",
+      "tacticalGuide": "Tactical Guide",
+      "mobileControls": "Match navigation"
+    }
+  },
+  "classes": {
+    "brilliant": "Brilliant",
+    "great": "Great",
+    "best": "Best",
+    "excellent": "Excellent",
+    "good": "Good",
+    "book": "Book",
+    "forced": "Forced",
+    "inaccuracy": "Inaccuracy",
+    "mistake": "Mistake",
+    "miss": "Miss",
+    "blunder": "Blunder"
+  },
+  "puzzles": {
+    "themes": {
+      "mateIn1": "Mate in 1",
+      "mateIn2": "Mate in 2",
+      "mateIn3": "Mate in 3",
+      "fork": "Fork",
+      "pin": "Pin",
+      "skewer": "Skewer",
+      "discoveredAttack": "Discovered attack",
+      "doubleCheck": "Double check",
+      "hangingPiece": "Hanging piece",
+      "trappedPiece": "Trapped piece",
+      "sacrifice": "Sacrifice",
+      "deflection": "Deflection",
+      "attraction": "Attraction",
+      "clearance": "Clearance",
+      "interference": "Interference",
+      "intermezzo": "In-between move",
+      "xRayAttack": "X-ray",
+      "quietMove": "Quiet move",
+      "defensiveMove": "Defensive move",
+      "zugzwang": "Zugzwang",
+      "backRankMate": "Back-rank mate",
+      "smotheredMate": "Smothered mate",
+      "promotion": "Promotion",
+      "kingsideAttack": "Kingside attack",
+      "opening": "Opening",
+      "middlegame": "Middlegame",
+      "endgame": "Endgame",
+      "rookEndgame": "Rook endgame",
+      "pawnEndgame": "Pawn endgame",
+      "short": "Short (2 moves)",
+      "long": "Long (3 moves)",
+      "veryLong": "Very long (4+ moves)",
+      "crushing": "Crushing",
+      "advantage": "Advantage",
+      "equality": "Equality",
+      "mate": "Checkmate",
+      "oneMove": "One move",
+      "master": "Master game",
+      "masterVsMaster": "Master vs master",
+      "superGM": "Super GM game",
+      "bishopEndgame": "Bishop endgame",
+      "knightEndgame": "Knight endgame",
+      "queenEndgame": "Queen endgame",
+      "queenRookEndgame": "Queen and rook endgame",
+      "advancedPawn": "Advanced pawn",
+      "attackingF2F7": "Attacking f2/f7",
+      "capturingDefender": "Capture the defender",
+      "castling": "Castling",
+      "enPassant": "En passant",
+      "exposedKing": "Exposed king",
+      "hookMate": "Hook mate",
+      "anastasiaMate": "Anastasia's mate",
+      "arabianMate": "Arabian mate",
+      "bodenMate": "Boden's mate",
+      "doubleBishopMate": "Double bishop mate",
+      "dovetailMate": "Dovetail mate",
+      "underPromotion": "Underpromotion",
+      "queensideAttack": "Queenside attack",
+      "mateIn4": "Mate in 4",
+      "mateIn5": "Mate in 5"
+    },
+    "noPuzzles": "No puzzles found. Has the puzzle database been imported (pnpm import:puzzles)?",
+    "loadFailed": "Could not load a puzzle.",
+    "status": {
+      "loadingPuzzle": "Loading puzzle…",
+      "watch": "Watch your opponent's move…",
+      "findWhite": "Find the best move for White.",
+      "findBlack": "Find the best move for Black.",
+      "wrong": "Not the move. Try again, or look at the solution.",
+      "solved": "Solved! Well played.",
+      "failed": "Puzzle complete — counted as a miss this time."
+    },
+    "modes": {
+      "rated": "Rated",
+      "streak": "Streak",
+      "timed": "3-minute rush"
+    },
+    "blurbs": {
+      "rated": "Puzzles at your level. Your rating moves with every result.",
+      "streak": "Puzzles get harder each time. One mistake ends the run.",
+      "timed": "Solve as many as you can. A mistake costs 10 seconds."
+    },
+    "rushIntro": "Solve as many puzzles as you can. Mistakes cost 10 seconds.",
+    "start": "Start",
+    "inARow": "puzzles in a row · best {best}",
+    "solvedCount": "puzzles solved · best {best}",
+    "playAgain": "Play again",
+    "mode": "Puzzle mode",
+    "yourRating": "Your puzzle rating",
+    "provisional": "provisional",
+    "best": "best {n}",
+    "theme": "Theme",
+    "anyTheme": "Any theme",
+    "next": "Next puzzle",
+    "showSolution": "Show solution",
+    "analyze": "Analyze",
+    "puzzleRating": "Puzzle rating",
+    "fromGame": "From a Lichess game",
+    "loading": "Loading",
+    "daily": {
+      "title": "Daily puzzle",
+      "none": "No daily puzzle yet — import the puzzle database first.",
+      "loadFailed": "Could not load today's puzzle.",
+      "shareSolved": "Kingside daily puzzle {date}: ✅ solved first try",
+      "shareMissed": "Kingside daily puzzle {date}: 🟨 not on the first try — back tomorrow",
+      "sameForEveryone": "same puzzle for everyone",
+      "wrong": "Not the move — try again.",
+      "solved": "Solved! Come back tomorrow for a new one.",
+      "done": "Done. See you tomorrow!",
+      "alreadyFirstTry": "You already finished today's puzzle (first try). Playing again won't change your result.",
+      "alreadyMistakes": "You already finished today's puzzle (with mistakes). Playing again won't change your result.",
+      "share": "Share result",
+      "more": "Train more puzzles"
+    }
+  },
+  "play": {
+    "thinking": "thinking…",
+    "fullStrength": "full strength",
+    "you": "You",
+    "bot": "Bot",
+    "draw": "Draw",
+    "youWon": "You won!",
+    "botWon": "{name} won",
+    "reasons": {
+      "checkmate": "by checkmate",
+      "stalemate": "by stalemate",
+      "insufficient": "insufficient material",
+      "threefold": "by threefold repetition",
+      "fiftyMove": "by the fifty-move rule",
+      "resignation": "by resignation",
+      "timeout": "on time"
+    },
+    "review": "Review game",
+    "rematch": "Rematch",
+    "newOpponent": "New opponent",
+    "youOpen": "You have White. Your move.",
+    "botOpens": "{name} opens.",
+    "hint": "Hint",
+    "takeback": "Takeback",
+    "resign": "Resign",
+    "usage": "Hints used: {hints} · takebacks: {takebacks}",
+    "setup": {
+      "title": "Play the bots",
+      "subtitle": "Ten opponents from first steps to full Stockfish 19. Every game is saved on this device and can be reviewed.",
+      "max": "Max",
+      "playWhite": "Play White",
+      "random": "Random",
+      "playBlack": "Play Black",
+      "noClock": "No clock",
+      "note": "Strengths are approximate. Bots from 1320 up use Stockfish's built-in strength limit; the three easiest also make deliberate random moves."
+    },
+    "bots": {
+      "pip": "Just learned how the pieces move.",
+      "rosa": "Knows the rules, still hangs a piece now and then.",
+      "milo": "Spots simple tactics, misses deeper ones.",
+      "tara": "Solid club player. Punishes loose pieces.",
+      "kenji": "Plans ahead and likes active pieces.",
+      "amara": "Strong tournament player. Few free gifts.",
+      "viktor": "Expert strength. Converts small edges.",
+      "selene": "Master level. Precise in the endgame.",
+      "atlas": "Grandmaster strength. Good luck.",
+      "max": "Stockfish 19 at full power. Unbeatable for humans."
+    }
+  },
+  "home": {
+    "hero": {
+      "live": "Analysis, review, puzzles, practice, bots and insights are live",
+      "title1": "Analyze chess,",
+      "title2": "free forever.",
+      "subtitle": "World-class engine analysis, match analysis, puzzles and bots — running right in your browser. No account, no paywall, no trackers.",
+      "cta": "Open analysis board",
+      "setup": "Set up a position",
+      "badges": {
+        "free": "100% free",
+        "engine": "Stockfish 19 in your browser",
+        "noAccount": "No account"
+      }
+    },
+    "stats": {
+      "label": "Kingside at a glance",
+      "free": "Free, every feature",
+      "engine": "Stockfish engine version",
+      "pieces": "Piece sets",
+      "boards": "Board themes",
+      "accounts": "Accounts needed"
+    },
+    "features": {
+      "eyebrow": "Everything in one place",
+      "title": "Every tool a player needs, <em>none behind a paywall</em>",
+      "text": "Live tools are ready now. The rest is on the roadmap and lands phase by phase."
+    },
+    "review": {
+      "eyebrow": "Match Analysis",
+      "title": "From finished game to <em>clear lessons</em>",
+      "step": "Step {n}",
+      "cta": "Review one of your games",
+      "steps": {
+        "bring": {
+          "title": "Bring your game",
+          "text": "Type your Lichess or Chess.com username, or paste any PGN."
+        },
+        "rated": {
+          "title": "Every move rated",
+          "text": "Stockfish checks each move: brilliant, best, mistake, blunder and more — plus accuracy for both players."
+        },
+        "study": {
+          "title": "Study what matters",
+          "text": "Key moments, opening / middlegame / endgame accuracy and a rating estimate. Retry your mistakes."
+        }
+      }
+    },
+    "values": {
+      "eyebrow": "Our promise",
+      "title": "Free means <em>actually free</em>",
+      "items": {
+        "account": {
+          "title": "No account, ever needed",
+          "text": "Open the site and start. Your games and settings stay on your device."
+        },
+        "ads": {
+          "title": "No ads, no trackers",
+          "text": "We don't sell your attention or your data. Nothing to opt out of."
+        },
+        "device": {
+          "title": "Engine runs on your device",
+          "text": "Stockfish 19 works in your browser, so analysis is fast and private."
+        },
+        "open": {
+          "title": "Open source (AGPL-3.0)",
+          "text": "Every line is public. Anyone can check it, improve it or run their own."
+        }
+      }
+    },
+    "cta": {
+      "title": "Your next game deserves <em>a second look.</em>",
+      "text": "Paste a PGN or set up a position and let Stockfish 19 show you what really happened.",
+      "button": "Start analyzing"
+    },
+    "themes": {
+      "eyebrow": "Make it yours",
+      "title": "A board that looks <em>the way you like</em>",
+      "text": "Pick colors and pieces here — your choice is saved on this device and used on every board.",
+      "colors": "Board colors",
+      "pieces": "Pieces"
+    },
+    "heroBoard": {
+      "seek": "Move in game",
+      "vs": "vs",
+      "pause": "Pause",
+      "play": "Play",
+      "restart": "Restart",
+      "start": "Start",
+      "previousGame": "Previous game",
+      "nextGame": "Next game"
+    },
+    "legendary": {
+      "eyebrow": "Legendary games",
+      "title": "Six games that <em>made history</em>",
+      "text": "Play through the classics with Stockfish's evaluation, or send any of them straight to a full review.",
+      "watch": "Watch",
+      "review": "Review",
+      "analyze": "Analyze",
+      "loading": "Loading games…",
+      "games": {
+        "immortal": {
+          "title": "The Immortal Game",
+          "note": "White gives up both rooks, a bishop and the queen — and mates with three minor pieces.",
+          "moments": {
+            "33": "Nd5 — ignoring the rook",
+            "35": "Bd6 — giving up both rooks",
+            "37": "e5 — sealing the queen out",
+            "43": "Qf6+ — the queen sacrifice",
+            "45": "Be7 — checkmate with minor pieces"
+          }
+        },
+        "evergreen": {
+          "title": "The Evergreen Game",
+          "note": "A quiet build-up explodes into a rook sacrifice, a queen sacrifice and a bishop finish.",
+          "moments": {
+            "39": "Rxe7+ — the rook sacrifice",
+            "41": "Qxd7+ — the queen follows",
+            "43": "Bf5+ — double check",
+            "47": "Bxe7 — checkmate"
+          }
+        },
+        "opera": {
+          "title": "The Opera Game",
+          "note": "Fast development, open lines and a queen sacrifice — a model of attacking chess.",
+          "moments": {
+            "19": "Nxb5 — a piece for the attack",
+            "25": "Rxd7 — removing the defender",
+            "31": "Qb8+ — the queen sacrifice",
+            "33": "Rd8 — checkmate"
+          }
+        },
+        "lasker-bauer": {
+          "title": "Two bishops on the king",
+          "note": "The first famous double bishop sacrifice tears the king's shelter apart.",
+          "moments": {
+            "29": "Bxh7+ — the first bishop",
+            "33": "Bxg7 — and the second",
+            "39": "Rh3+ — the rook joins in"
+          }
+        },
+        "century": {
+          "title": "The Game of the Century",
+          "note": "A thirteen-year-old gives up his queen for a crushing attack with minor pieces.",
+          "moments": {
+            "22": "Na4 — a knight offer",
+            "34": "Be6 — giving up the queen",
+            "82": "Rc2 — checkmate"
+          }
+        },
+        "kasparov-topalov": {
+          "title": "Kasparov's Immortal",
+          "note": "A rook sacrifice starts a king hunt across the whole board.",
+          "moments": {
+            "47": "Rxd4 — the rook sacrifice",
+            "49": "Re7+ — the hunt begins",
+            "87": "Qa7 — the final quiet move"
+          }
+        }
+      }
+    },
+    "quick": {
+      "label": "Start with anything",
+      "placeholder": "Paste a PGN or FEN, or type a Lichess / Chess.com username",
+      "paste": "Paste from clipboard",
+      "kind": {
+        "empty": "PGN · FEN · username",
+        "fen": "Position (FEN)",
+        "pgn": "Game (PGN)",
+        "user": "Username",
+        "unknown": "Not recognised"
+      },
+      "lichess": "Lichess games",
+      "chesscom": "Chess.com games",
+      "review": "Review game",
+      "analyze": "Open in analysis",
+      "analyzePosition": "Analyze position",
+      "openBoard": "Open the analysis board",
+      "invalid": "That PGN could not be read. Check the moves and try again."
+    }
+  },
+  "meta": {
+    "editor": {
+      "title": "Board editor",
+      "description": "Set up any chess position, export its FEN, and analyze it with Stockfish."
+    },
+    "library": {
+      "title": "My games",
+      "description": "Your played, reviewed and saved games — stored only in this browser."
+    },
+    "openings": {
+      "title": "Opening explorer",
+      "description": "Opening names, book moves and masters statistics for any position. Free, no account."
+    },
+    "review": {
+      "title": "Match Analysis",
+      "description": "Import your Lichess or Chess.com games and see every move rated by Stockfish 19. Free, no account."
+    },
+    "settings": {
+      "title": "Settings",
+      "description": "Board, pieces, sounds, notation and engine settings. Stored only in this browser."
+    },
+    "play": {
+      "title": "Play the bots",
+      "description": "Play chess against ten bots from beginner to full Stockfish 19 strength. Free, no account."
+    },
+    "puzzles": {
+      "title": "Puzzles",
+      "description": "Free rated chess puzzles by theme, puzzle streaks and a 3-minute rush. No account needed."
+    },
+    "daily": {
+      "title": "Daily puzzle",
+      "description": "One new chess puzzle every day, the same for everyone. Free, no account."
+    },
+    "shared": {
+      "title": "Shared game",
+      "description": "A chess game shared from Kingside — step through it, analyze it or review every move."
+    },
+    "embed": {
+      "title": "Embedded game"
+    },
+    "endgames": {
+      "title": "Endgame tablebase",
+      "description": "Perfect play for any position with up to 7 pieces, from the Syzygy tablebases."
+    },
+    "analysis": {
+      "title": "Analysis board",
+      "description": "Analyze any chess position or game with Stockfish 19, free and without an account."
+    },
+    "offline": {
+      "title": "Offline"
+    },
+    "site": {
+      "title": "Kingside — free chess analysis",
+      "description": "Free chess analysis, match analysis, puzzles and bots with Stockfish 19. No account, no paywall."
+    },
+    "practice": {
+      "title": "Practice positions",
+      "description": "Classic checkmates, tactics and endgames to play out against Stockfish, plus drills from your own mistakes. Free, no account."
+    },
+    "insights": {
+      "title": "Insights",
+      "description": "Your accuracy, openings and typical mistakes across every reviewed game — computed and stored only in this browser."
+    }
+  },
+  "manifest": {
+    "name": "Kingside — free chess analysis",
+    "description": "Free chess analysis, match analysis, puzzles and bots with Stockfish 19. Works offline."
+  },
+  "reviewOptions": {
+    "title": "Review options",
+    "badges": "Move labels on the board",
+    "bestArrow": "Best-move arrow",
+    "threatArrow": "Threat arrow",
+    "threatArrowHint": "Red arrow for the opponent's strongest reply after an error.",
+    "moveTimes": "Time per move",
+    "moveTimesHint": "Shown when the game has clock times.",
+    "keyFor": "Key moments for",
+    "keyForOptions": {
+      "both": "Both",
+      "white": "White",
+      "black": "Black"
+    },
+    "metric": "Score metric",
+    "metricOptions": {
+      "accuracy": "Classic Accuracy",
+      "precision": "Kingside Precision"
+    }
+  },
+  "practice": {
+    "title": "Practice",
+    "subtitle": "Classic positions to master against Stockfish. Reach the goal, and the engine defends as well as it can.",
+    "progress": "{done} / {total} solved",
+    "level": {
+      "1": "Beginner",
+      "2": "Intermediate",
+      "3": "Advanced"
+    },
+    "fromGames": {
+      "title": "From your games",
+      "description": "Your own mistakes from reviewed games, coming back until you find the better move.",
+      "due": "{n, plural, =0 {Nothing due} one {# due now} other {# due now}}",
+      "total": "{n, plural, one {# position} other {# positions}} saved",
+      "empty": "Review a game and its mistakes appear here.",
+      "start": "Practice",
+      "reviewGame": "Review a game"
+    },
+    "sections": {
+      "mates": {
+        "title": "Basic checkmates",
+        "description": "Finish the game with an extra piece: queen, rooks, bishops."
+      },
+      "patterns": {
+        "title": "Mating patterns",
+        "description": "Famous mating nets — spot them in one to four moves."
+      },
+      "tactics": {
+        "title": "Tactics",
+        "description": "Forks, skewers and discovered attacks that win material."
+      },
+      "pawns": {
+        "title": "Pawn endgames",
+        "description": "Opposition, key squares and the square of the pawn."
+      },
+      "endgames": {
+        "title": "Piece endgames",
+        "description": "Rook technique, the Lucena bridge and queen against a pawn."
+      },
+      "defence": {
+        "title": "Defence",
+        "description": "Hold the draw a pawn down — the positions every player must know."
+      }
+    },
+    "goal": {
+      "mate": "Checkmate the opponent.",
+      "mateIn": "Checkmate in {n, plural, one {# move} other {# moves}}.",
+      "promote": "Promote a pawn and keep the win.",
+      "draw": "Hold the draw for {n} moves.",
+      "advantage": "Win material within {n, plural, one {# move} other {# moves}}."
+    },
+    "session": {
+      "yourTurn": "Your move",
+      "thinking": "Stockfish is thinking…",
+      "success": "Goal reached!",
+      "failure": "Not this time.",
+      "failureReason": {
+        "mate": "The win slipped away or the moves ran out.",
+        "promote": "The winning chances are gone.",
+        "draw": "The position is now lost.",
+        "advantage": "The moves ran out without winning material."
+      },
+      "retry": "Try again",
+      "next": "Next position",
+      "back": "All positions",
+      "hint": "Hint",
+      "hintShown": "Hint: move the highlighted piece.",
+      "moves": "Moves",
+      "youPlay": "You play {color}",
+      "white": "White",
+      "black": "Black",
+      "solved": "Solved",
+      "undo": "Take back"
+    },
+    "drill": {
+      "title": "From your games",
+      "find": "Find a better move than {played}.",
+      "from": "{white} vs {black}, move {n}",
+      "correct": "Correct — {move} is the best move.",
+      "alsoGood": "{move} is good too (best was {best}).",
+      "wrong": "{move} isn't it. The best move was {best}.",
+      "checking": "Checking {move}…",
+      "next": "Next",
+      "done": "All due positions done for now.",
+      "comeBack": "Come back later — each one returns when it's due.",
+      "box": "Learned {n} / 5",
+      "remove": "Remove",
+      "skip": "Skip",
+      "show": "Show answer"
+    },
+    "positions": {
+      "queen-mate": {
+        "title": "Queen and king",
+        "text": "Push the king to the edge with your queen a knight's jump away, then bring your king up. Watch out for stalemate."
+      },
+      "two-rooks": {
+        "title": "Two rooks",
+        "text": "The rooks take turns cutting off ranks — a ladder that walks the king to the edge."
+      },
+      "rook-mate": {
+        "title": "Rook and king",
+        "text": "Use the rook to box the king in and your own king to take away squares. Shrink the box move by move."
+      },
+      "two-bishops": {
+        "title": "Two bishops",
+        "text": "Side by side the bishops form a wall. Drive the king into a corner; your king must help."
+      },
+      "bishop-knight": {
+        "title": "Bishop and knight",
+        "text": "The hardest basic mate: only the corners of the bishop's color work. Within fifty moves, please."
+      },
+      "back-rank": {
+        "title": "Back rank",
+        "text": "The king is boxed in by its own pawns. One rook move ends it."
+      },
+      "smothered": {
+        "title": "Smothered king",
+        "text": "Surrounded by its own pieces, the king has nowhere to go. The knight finishes."
+      },
+      "arabian": {
+        "title": "Rook and knight",
+        "text": "A rook next to the king, protected by a knight — one of the oldest known mates."
+      },
+      "scholars": {
+        "title": "Weak f7",
+        "text": "Early in the game f7 is defended only by the king. Strike."
+      },
+      "ladder": {
+        "title": "The ladder",
+        "text": "Two rooks, two moves. One cuts off, the other mates."
+      },
+      "legal": {
+        "title": "The queen as bait",
+        "text": "Black just won your queen. Was it worth it? Mate in two."
+      },
+      "anastasia": {
+        "title": "Knight and rook",
+        "text": "The knight covers the escape squares. Open the h-file and mate."
+      },
+      "philidor-legacy": {
+        "title": "The knight's dance",
+        "text": "Check, double check, a queen sacrifice — and a smothered king. Mate in four."
+      },
+      "knight-fork": {
+        "title": "Family fork",
+        "text": "A knight attacks two pieces at once — especially strong when one of them is the king."
+      },
+      "skewer": {
+        "title": "Skewer",
+        "text": "Check the king along a line; when it steps aside, the piece behind it falls."
+      },
+      "discovered": {
+        "title": "Discovered check",
+        "text": "Move the knight out of the rook's way with check — and attack something at the same time."
+      },
+      "opposition": {
+        "title": "Taking the opposition",
+        "text": "Kings face each other with one square between them. The side that does not have to move wins the standoff."
+      },
+      "key-squares": {
+        "title": "Key squares",
+        "text": "Get your king to a key square in front of the pawn and the pawn will queen by itself."
+      },
+      "square": {
+        "title": "The square of the pawn",
+        "text": "Can your king catch the pawn? Count the square from the pawn to the queening rank."
+      },
+      "breakthrough": {
+        "title": "Breakthrough",
+        "text": "Three pawns against three — sacrifice two so the third one runs through."
+      },
+      "rook-cut": {
+        "title": "Rook and king (cut off)",
+        "text": "Keep the king cut off with your rook and drive it back rank by rank."
+      },
+      "queen-vs-pawn": {
+        "title": "Queen against a pawn",
+        "text": "Check, approach, check again: force the king in front of its pawn and bring your king closer each time."
+      },
+      "lucena": {
+        "title": "Building a bridge",
+        "text": "The famous winning method: get your king out and use the rook to shield it from checks."
+      },
+      "philidor": {
+        "title": "Third-rank defence",
+        "text": "Keep your rook on the third rank from your side until the pawn advances, then check from behind."
+      },
+      "king-in-front": {
+        "title": "King in front of the pawn",
+        "text": "Stay in front of the pawn and keep the opposition. The pawn cannot pass."
+      },
+      "wrong-bishop": {
+        "title": "The wrong bishop",
+        "text": "The bishop does not control the queening corner. Get your king there and stay."
+      },
+      "rook-pawn": {
+        "title": "Edge pawn",
+        "text": "With a pawn on the edge, a king in the corner is impossible to dislodge."
+      }
+    }
+  },
+  "insights": {
+    "title": "Insights",
+    "subtitle": "Patterns across every game you reviewed here. Computed in your browser, never uploaded.",
+    "empty": "No reviewed games yet. Review a few of your games by username and they show up here.",
+    "noSide": "We don't know which side is you yet — pick your name below, or review games by searching your Lichess or Chess.com username.",
+    "reviewGames": "Review games",
+    "overview": "Overview",
+    "games": "Games",
+    "accuracy": "Accuracy",
+    "acpl": "Avg. centipawn loss",
+    "record": "Won / drawn / lost",
+    "trend": "Accuracy by game",
+    "trendAria": "Accuracy over your last {n} reviewed games",
+    "needMore": "Review at least two games to see a trend.",
+    "byPhase": "Accuracy by phase",
+    "phases": {
+      "opening": "Opening",
+      "middlegame": "Middlegame",
+      "endgame": "Endgame"
+    },
+    "bySide": "By color",
+    "side": "Color",
+    "sides": {
+      "white": "White",
+      "black": "Black"
+    },
+    "scorePct": "Score",
+    "quality": "Move quality",
+    "openings": "Openings",
+    "opening": "Opening",
+    "unknownOpening": "Unknown opening",
+    "advice": {
+      "title": "What to work on",
+      "phase": "Your weakest phase is the {phase} ({v} accuracy on average).",
+      "errors": "You make {n} serious errors (mistakes, misses, blunders) per game.",
+      "drills": "{n, plural, =0 {No mistakes are due for practice right now.} one {# of your mistakes is waiting for practice.} other {# of your mistakes are waiting for practice.}}",
+      "drillsLink": "Practice them"
+    },
+    "privacy": "Stored only on this device. Clearing your browser data removes it.",
+    "whoAreYou": "Which one is you?"
+  }
+}

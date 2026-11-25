@@ -1,0 +1,11 @@
+packages:
+  - frontend
+  - backend
+  - packages/*
+
+# Dependencies allowed to run install scripts.
+allowBuilds:
+  esbuild: true
+  # Pulled in by next-intl's optional message extractor (unused); their install scripts are not needed.
+  "@parcel/watcher": false
+  "@swc/core": false

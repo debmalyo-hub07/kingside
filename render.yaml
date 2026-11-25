@@ -1,0 +1,44 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Render Blueprint Specification for Kingside Backend API
+# Documentation: https://render.com/docs/blueprint-spec
+
+version: "1"
+
+services:
+  - type: web
+    name: kingside-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: .
+    plan: free
+    region: oregon
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: TRUST_PROXY
+        value: "true"
+      - key: CORS_ORIGINS
+        value: https://kingsidechess.vercel.app,https://kingsidechess-*.vercel.app
+      - key: MONGODB_URI
+        sync: false
+      - key: MONGODB_DB
+        value: kingside
+      - key: REDIS_URL
+        value: ""
+      - key: API_CONTACT
+        sync: false
+      - key: LICHESS_TOKEN
+        sync: false
+      - key: SERVER_ENGINE_ENABLED
+        value: "true"
+      - key: SERVER_ENGINE_HASH_MB
+        value: 16
+      - key: SERVER_ENGINE_MAX_NODES
+        value: 400000
+      - key: SERVER_ENGINE_MAX_QUEUE
+        value: 4
+      - key: SERVER_ENGINE_TIMEOUT_MS
+        value: 15000

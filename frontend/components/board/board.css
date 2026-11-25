@@ -1,0 +1,125 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+/* Kingside board skin for chessground. Colors come from CSS variables set by <ChessBoard>. */
+
+.ks-board cg-board {
+  background-color: var(--board-light);
+  background-image: repeating-conic-gradient(var(--board-dark) 0 25%, var(--board-light) 0 50%);
+  background-size: 25% 25%;
+  border-radius: 4px;
+}
+
+.ks-board cg-board square.last-move {
+  background-color: var(--board-last);
+}
+.ks-board cg-board square.selected {
+  background-color: var(--board-accent);
+}
+.ks-board cg-board square.move-dest {
+  background: radial-gradient(var(--board-accent) 19%, transparent 20%);
+}
+.ks-board cg-board square.oc.move-dest {
+  background: radial-gradient(transparent 0%, transparent 79%, var(--board-accent) 80%);
+}
+.ks-board cg-board square.move-dest:hover {
+  background: var(--board-accent);
+  opacity: 0.7;
+}
+.ks-board cg-board square.check {
+  background: radial-gradient(
+    ellipse at center,
+    rgb(239 68 68) 0%,
+    rgb(220 38 38 / 0.8) 30%,
+    transparent 75%
+  );
+}
+
+/* Pieces */
+.ks-board piece.king.white {
+  background-image: var(--piece-white-king);
+}
+.ks-board piece.queen.white {
+  background-image: var(--piece-white-queen);
+}
+.ks-board piece.rook.white {
+  background-image: var(--piece-white-rook);
+}
+.ks-board piece.bishop.white {
+  background-image: var(--piece-white-bishop);
+}
+.ks-board piece.knight.white {
+  background-image: var(--piece-white-knight);
+}
+.ks-board piece.pawn.white {
+  background-image: var(--piece-white-pawn);
+}
+.ks-board piece.king.black {
+  background-image: var(--piece-black-king);
+}
+.ks-board piece.queen.black {
+  background-image: var(--piece-black-queen);
+}
+.ks-board piece.rook.black {
+  background-image: var(--piece-black-rook);
+}
+.ks-board piece.bishop.black {
+  background-image: var(--piece-black-bishop);
+}
+.ks-board piece.knight.black {
+  background-image: var(--piece-black-knight);
+}
+.ks-board piece.pawn.black {
+  background-image: var(--piece-black-pawn);
+}
+
+/* Coordinates drawn inside the board corners */
+.ks-board coords {
+  font-family: var(--font-sans), sans-serif;
+  font-weight: 600;
+  font-size: clamp(8px, 1.6cqw, 12px);
+  opacity: 1;
+}
+.ks-board coords.ranks {
+  left: 3px;
+  top: 2px;
+  align-items: flex-start;
+}
+.ks-board coords.ranks coord {
+  transform: none;
+}
+.ks-board coords.files {
+  left: 0;
+  bottom: 1px;
+  height: auto;
+  text-align: right;
+  text-transform: lowercase;
+}
+.ks-board coords.files coord {
+  padding-right: 3px;
+}
+.ks-board.orientation-white coords.ranks :nth-child(odd),
+.ks-board.orientation-black coords.ranks :nth-child(even),
+.ks-board.orientation-white coords.files :nth-child(odd),
+.ks-board.orientation-black coords.files :nth-child(even) {
+  color: var(--board-light);
+}
+.ks-board.orientation-white coords.ranks :nth-child(even),
+.ks-board.orientation-black coords.ranks :nth-child(odd),
+.ks-board.orientation-white coords.files :nth-child(even),
+.ks-board.orientation-black coords.files :nth-child(odd) {
+  color: var(--board-dark);
+}
+
+/* Pieces you can move show an open hand; while dragging, a closed hand. */
+.ks-board cg-board piece {
+  cursor: default;
+}
+.ks-board[data-interactive] cg-board piece {
+  cursor: grab;
+}
+.ks-board cg-board piece.dragging,
+.ks-board cg-board:has(piece.dragging) {
+  cursor: grabbing;
+}
+.ks-board cg-board square.move-dest {
+  cursor: pointer;
+}

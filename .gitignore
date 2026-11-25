@@ -1,0 +1,55 @@
+node_modules/
+.pnpm-store/
+.next/
+.turbo/
+dist/
+coverage/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# Testing artifacts, suites & test configs (kept locally on disk; excluded from GitHub)
+playwright-report/
+test-results/
+/backend/test/
+/frontend/e2e/
+/packages/*/test/
+*.test.ts
+*.test.tsx
+*.spec.ts
+/frontend/vitest.config.ts
+/frontend/playwright.config.ts
+
+# Environment & secrets
+.env*
+!.env.example
+!**/.env.example
+
+# Local maintenance scripts & deploy helpers (leading / preserves frontend/scripts & backend/scripts)
+/scripts/
+/deploy-api.ps1
+/deploy-web.ps1
+
+# Engine binaries copied at install time
+frontend/public/engine/
+
+# Data dumps
+*.csv
+*.zst
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Internal files, prompt instructions, and history (local only)
+CLAUDE.md
+HANDOFF.md
+frontend/AGENTS.md
+.claude/
+docs/history/
+
+# Vercel CLI links & legacy Vercel backend shims (local only)
+.vercel*
+/backend/vercel.json
+/backend/scripts/build-vercel.mjs
+/backend/src/vercel-entry.ts

@@ -1,0 +1,4 @@
+{
+  "extends": "@kingside/config/tsconfig/library.json",
+  "include": ["src", "test"]
+}
