@@ -3,7 +3,7 @@
 // speed: live analysis, bots, practice) and "full" (~99 MB, strongest: game review). One search at a time:
 // a new analyze() call stops the running search and starts the new one after `bestmove`.
 
-import type { Color } from "@kingside/chess-core";
+import { type Color, isUnrelatedGameFen } from "@kingside/chess-core";
 import { type EngineInfo, parseInfoLine } from "@kingside/uci";
 
 export const ENGINE_NAME = "Stockfish 19 NNUE";
@@ -195,6 +195,8 @@ export class StockfishEngine {
   private searching = false;
   private failed: Error | null = null;
   private destroyed = false;
+  private lastFen: string | null = null;
+  private needsNewGame = false;
   private lastEmit = 0;
   private emitTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -269,6 +271,12 @@ export class StockfishEngine {
   setOption(name: string, value: string | number | boolean): void {
     if (this.failed || this.destroyed) return;
     this.send(`setoption name ${name} value ${value}`);
+  }
+
+  /** Marks the next search as a new game so `ucinewgame` clears TT/history tables. */
+  newGame(): void {
+    if (this.failed || this.destroyed) return;
+    this.needsNewGame = true;
   }
 
   /** Searches `fen` to completion and resolves with the final snapshot (or rejects on worker failure). */
@@ -402,6 +410,11 @@ export class StockfishEngine {
       this.pending = null;
     }
     this.current = job;
+    if (this.needsNewGame || (this.lastFen !== null && isUnrelatedGameFen(this.lastFen, job.fen))) {
+      this.send("ucinewgame");
+    }
+    this.needsNewGame = false;
+    this.lastFen = job.fen;
     this.send(`setoption name MultiPV value ${job.options.multiPv}`);
     this.send(`position fen ${job.fen}`);
     const { depth, movetimeMs, nodes } = job.options;

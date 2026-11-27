@@ -23,7 +23,7 @@ export interface Settings {
   /** 0 = auto (cores - 1, max 8). */
   engineThreads: number;
   engineHashMb: number;
-  /** Net for the live analysis board: lite is ~2× faster and loads instantly; full is strongest. */
+  /** Net for the live analysis board: full NNUE is strongest (default); lite is ~2× faster and optional. */
   analysisNet: "lite" | "full";
   soundEnabled: boolean;
   /** 0..1 */
@@ -65,7 +65,7 @@ export const DEFAULT_SETTINGS: Settings = {
   engineLines: 3,
   engineThreads: 0,
   engineHashMb: 64,
-  analysisNet: "lite",
+  analysisNet: "full",
   soundEnabled: true,
   soundVolume: 0.6,
   notation: "san",

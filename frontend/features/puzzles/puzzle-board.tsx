@@ -3,6 +3,7 @@
 
 import { positionFromFen } from "@kingside/chess-core";
 import type { Api } from "chessground/api";
+import type { DrawShape } from "chessground/draw";
 import type { Key } from "chessground/types";
 import { chessgroundDests } from "chessops/compat";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -34,6 +35,7 @@ export function PuzzleBoard({ state }: { state: PuzzleState }) {
   const lastMove = state.lastMove
     ? ([state.lastMove.slice(0, 2), state.lastMove.slice(2, 4)] as Key[])
     : undefined;
+  const shapes: DrawShape[] = state.hintSquare ? [{ orig: state.hintSquare, brush: "yellow" }] : [];
 
   return (
     <ChessBoard
@@ -44,6 +46,7 @@ export function PuzzleBoard({ state }: { state: PuzzleState }) {
       lastMove={lastMove}
       check={pos.isCheck()}
       dests={dests}
+      autoShapes={shapes}
       onReady={(a) => {
         api.current = a;
       }}

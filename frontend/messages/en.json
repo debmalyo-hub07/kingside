@@ -76,7 +76,7 @@
     }
   },
   "footer": {
-    "tagline": "Free, open-source chess analysis. No account, no paywall, no trackers.",
+    "tagline": "Independent, open-source chess analysis studio built for focused study.",
     "license": "Debmalyo Barman · Kingside · AGPL-3.0-or-later",
     "credits": "Engine: Stockfish 19 (GPL-3.0) · Piece sets by their authors · Explorer and tablebase data from lichess.org",
     "engineLabel": "Engine:",
@@ -112,6 +112,9 @@
     "bookMove": "book move",
     "topGames": "Top games",
     "attribution": "Statistics from the lichess.org opening explorer.",
+    "copyFen": "Copy FEN",
+    "copied": "Copied",
+    "playBot": "Play vs Bot",
     "fallbackNoAccess": "Game statistics aren't set up on this server, so Kingside's own opening book (CC0) is shown.",
     "fallbackRateLimited": "The statistics service is busy right now. Showing Kingside's opening book instead.",
     "fallbackError": "Game statistics couldn't be loaded. Showing Kingside's opening book instead."
@@ -149,6 +152,7 @@
   },
   "share": {
     "button": "Share",
+    "hint": "Create a link, embed, PGN, PNG, or animated GIF",
     "title": "Share",
     "description": "Send a link, embed the board on a site, or download the game.",
     "close": "Close",
@@ -201,7 +205,8 @@
     "save": "Save",
     "saved": "Saved",
     "openOnKingside": "Open on Kingside",
-    "vs": "vs"
+    "vs": "vs",
+    "mobileControls": "Board navigation"
   },
   "library": {
     "title": "My games",
@@ -225,11 +230,21 @@
     "tableCaption": "Saved games",
     "players": "Players",
     "opening": "Opening",
+    "accuracy": "Accuracy",
     "date": "Saved",
     "actions": "Actions",
     "analyze": "Analyze",
-    "review": "Review",
+    "analyzeHint": "Inspect moves and lines with Stockfish",
+    "review": "Match Analysis",
+    "reviewHint": "Rate every move and explore key moments",
     "share": "Share",
+    "shareHint": "Create a link, embed, PGN, or animated GIF",
+    "preview": "Final position of {white} versus {black}",
+    "emptyPreview": "Chess board preview",
+    "whiteAbbr": "W",
+    "blackAbbr": "B",
+    "whiteAccuracy": "White accuracy {pct}%",
+    "blackAccuracy": "Black accuracy {pct}%",
     "selectAll": "Select all shown games",
     "select": "Select {white} – {black}",
     "selected": "{n, plural, one {# game selected} other {# games selected}}",
@@ -291,8 +306,8 @@
       "lichess": "Online games",
       "book": "Opening book",
       "net": "Analysis board engine (match analysis always uses the full net)",
-      "netLite": "Quick · lite net, ~2 MB, about 2× faster",
-      "netFull": "Max · full NNUE, 99 MB, strongest"
+      "netLite": "Quick · lite net, ~2 MB, about 2× faster (optional)",
+      "netFull": "Max · full NNUE, 99 MB, strongest (default)"
     },
     "language": {
       "title": "Language",
@@ -437,7 +452,14 @@
     },
     "fewerLines": "Fewer lines",
     "moreLines": "More lines",
-    "addLine": "Add the next {n} moves of this line"
+    "addLine": "Add the next {n} moves of this line",
+    "cloudBadge": "Cloud · d{depth}",
+    "cacheBadge": "Cached · d{depth}",
+    "threat": "Threat",
+    "threatHint": "See what your opponent threatens if you pass the turn (X)",
+    "threatInCheck": "In check — resolve the check to inspect quiet threats.",
+    "threatBest": "Threat: {move} ({score})",
+    "engineToggleHint": "Toggle local Stockfish 19 analysis (L)"
   },
   "analysis": {
     "white": "White",
@@ -454,19 +476,19 @@
       "draw": "Tablebase: draw"
     },
     "sidePanel": "Side panel",
-    "tabs": {
-      "moves": "Moves",
-      "explorer": "Explorer",
-      "tablebase": "Tablebase"
-    },
     "first": "First move",
     "previous": "Previous move",
     "next": "Next move",
     "last": "Last move",
     "flip": "Flip board",
+    "reset": "Reset",
+    "resetHint": "Reset board to the starting position",
+    "draw": "Draw",
     "deleteFromHere": "Delete from here",
     "deleteFromHereHint": "Delete this move and everything after it",
     "review": "Review",
+    "matchAnalysis": "Match Analysis",
+    "matchAnalysisNeedMoves": "Play at least 2 moves to run Match Analysis",
     "reviewHint": "Rate every move of the main line",
     "save": "Save to My games",
     "saved": "Saved to My games",
@@ -476,6 +498,115 @@
     "mobileControls": "Board navigation",
     "jumpEngine": "Engine",
     "jumpMoves": "Moves",
+    "previewBadge": "Preview",
+    "bestMove": "Play best",
+    "bestMoveHint": "Play the top engine move (Space)",
+    "autoPlay": "Auto-play",
+    "pauseAutoPlay": "Pause auto-play",
+    "autoPlayHint": "Step automatically through the current branch",
+    "focusMode": "Focus mode",
+    "exitFocusMode": "Exit focus mode",
+    "focusModeHint": "Collapse side panels around a larger board",
+    "practiceHere": "Practice from here",
+    "playVsBot": "Play vs Bot",
+    "practiceHereHint": "Play against a bot from this exact position",
+    "tools": "Tools",
+    "toolsHint": "Load PGN/FEN, board editor, save game, auto-play, and appearance",
+    "toolsGroups": {
+      "game": "Game & position",
+      "view": "Playback & view"
+    },
+    "evalGraphToggle": "Evaluation graph",
+    "threatMode": "Threat mode",
+    "moveHint": "Right-click or select ··· on a move to branch, comment, or annotate",
+    "moveActions": "Actions for {move}",
+    "expandVariation": "Expand variation",
+    "collapseVariation": "Collapse variation",
+    "variationMoves": "{n, plural, one {# move} other {# moves}}",
+    "menu": {
+      "promote": "Promote variation",
+      "makeMainline": "Make main line",
+      "editComment": "Edit comment",
+      "deleteFromHere": "Delete from here",
+      "nagsLabel": "Move annotations"
+    },
+    "comment": {
+      "title": "Move comment",
+      "description": "Add or update your note for {move}. Existing clock times stay intact.",
+      "placeholder": "Write an analysis note for this move…",
+      "save": "Save note",
+      "clear": "Clear",
+      "cancel": "Cancel"
+    },
+    "nags": {
+      "1": "Good move (!)",
+      "2": "Mistake (?)",
+      "3": "Brilliant move (!!)",
+      "4": "Blunder (??)",
+      "5": "Interesting move (!?)",
+      "6": "Dubious move (?!)",
+      "7": "Forced move (□)"
+    },
+    "guide": {
+      "button": "Shortcuts & guide",
+      "title": "Shortcuts & Feature Guide",
+      "description": "Quick keyboard shortcuts and visual tips for every tool on the analysis board.",
+      "shortcutsTitle": "Keyboard shortcuts",
+      "featuresTitle": "Interactive tools",
+      "close": "Close",
+      "shortcuts": {
+        "prev": "Previous move",
+        "next": "Next move",
+        "first": "Jump to start",
+        "last": "Jump to end",
+        "threat": "Toggle Threat Mode",
+        "engine": "Toggle Local Engine",
+        "best": "Play top engine move",
+        "flip": "Flip board orientation",
+        "guide": "Open this guide",
+        "escape": "Clear arrow preview or exit Focus mode"
+      },
+      "features": {
+        "threat": {
+          "title": "Threat Mode",
+          "text": "Draws crimson arrows for your opponent's strongest reply if you did nothing."
+        },
+        "preview": {
+          "title": "Click Lines & Arrow Previews",
+          "text": "Click any engine move to play the line onto the board; hover or focus explorer or tablebase moves to preview an arrow."
+        },
+        "tree": {
+          "title": "Variation Tree & Glyphs",
+          "text": "Right-click any move or tap ··· to promote lines, write notes, or mark ! ? !! ?? !? ?! □."
+        },
+        "draw": {
+          "title": "Multi-Color Board Drawing",
+          "text": "Pick green, blue, yellow, or red in Pencil Draw Mode (or right-click drag on desktop) and clear anytime."
+        },
+        "play": {
+          "title": "Auto-Play, Focus & Practice",
+          "text": "Step automatically with Play, expand the board with Focus, or challenge a bot from any position."
+        }
+      }
+    },
+    "tabs": {
+      "moves": "Moves",
+      "engine": "Engine",
+      "explorer": "Explorer",
+      "tablebase": "Tablebase",
+      "pgn": "PGN & Notes"
+    },
+    "pgnTab": {
+      "pgn": "Full PGN",
+      "fen": "FEN",
+      "copyPgn": "Copy PGN",
+      "copyFen": "Copy FEN",
+      "copied": "Copied",
+      "note": "Note on {move}",
+      "noteStart": "Opening comment",
+      "notePlaceholder": "Write an analysis note for this position…",
+      "saveNote": "Save note"
+    },
     "load": {
       "button": "Load PGN or FEN",
       "title": "Load PGN or FEN",
@@ -514,6 +645,7 @@
       "amethyst": "Amethyst"
     },
     "label": "Chess board",
+    "captured": "Captured pieces and material lead",
     "promotion": {
       "choose": "Choose promotion piece",
       "cancel": "Cancel promotion",
@@ -526,7 +658,23 @@
     },
     "evaluation": "Evaluation",
     "even": "Even",
-    "graph": "Position in game"
+    "graph": "Position in game",
+    "graphStart": "Start",
+    "graphWinPct": "{pct}% White",
+    "swipeMode": "Swipe mode",
+    "swipeModeHint": "Swipe left or right on the board to step through moves",
+    "drawMode": "Pencil draw mode",
+    "drawModeHint": "Draw arrows and circles on the board",
+    "brush": "Draw brush color",
+    "brushes": {
+      "green": "Green brush",
+      "blue": "Blue brush",
+      "yellow": "Yellow brush",
+      "red": "Red brush"
+    },
+    "clearShapes": "Clear drawings",
+    "clearShapesHint": "Clear all drawn arrows and circles",
+    "doneDrawing": "Done"
   },
   "speech": {
     "pieces": {
@@ -579,6 +727,17 @@
     "hint": "Drag pieces from the trays, or pick one and click squares. Drag a piece off the board to remove it.",
     "start": "Start position",
     "clear": "Clear board",
+    "presetLabel": "Position preset",
+    "presetPlaceholder": "Load preset…",
+    "playBot": "Play vs Bot",
+    "presets": {
+      "start": "Starting position",
+      "lucena": "Lucena rook endgame",
+      "philidor": "Philidor defense",
+      "najdorf": "Sicilian Najdorf",
+      "caroKann": "Caro-Kann structure",
+      "iqp": "Isolated queen's pawn"
+    },
     "sideToMove": "Side to move",
     "whiteToMove": "White to move",
     "blackToMove": "Black to move",
@@ -612,6 +771,7 @@
     "errors": {
       "analysisStopped": "The analysis stopped unexpectedly. Please try again."
     },
+    "restoring": "Restoring match analysis…",
     "import": {
       "title": "Match Analysis",
       "subtitle": "Every move rated by Stockfish 19, accuracy for both players, and the moments that decided the game.",
@@ -641,16 +801,25 @@
       "depth": "Strength",
       "recent": "Recent games",
       "recentOf": "Recent games of {name}",
-      "noneFound": "No standard games found for {name}."
+      "noneFound": "No standard games found for {name}.",
+      "recentUsernames": "Recent:",
+      "useUsername": "Find recent games for {name}"
     },
     "progress": {
       "title": "Reviewing your game…",
+      "heading": "Match Analysis",
       "players": "{white} vs {black}",
       "progress": "Analysis progress",
       "status": "{done} / {total} positions · {engine} · {nodes} nodes each",
       "cancel": "Cancel",
       "recheck": "Second look at the critical moments · {done} / {total}",
-      "downloading": "Downloading the review engine · {pct}% (first review only)"
+      "downloading": "Downloading the review engine · {pct}% (first review only)",
+      "stageDownloading": "Loading Stockfish 19 WASM",
+      "pass1": "First-pass scan",
+      "pass2": "Deep critical recheck",
+      "plyCounter": "{done} / {total} plies",
+      "recheckCounter": "{done} / {total} critical",
+      "throughput": "{nodes} nodes / pos"
     },
     "report": {
       "accuracy": "accuracy",
@@ -687,11 +856,85 @@
         "alsoGood": "{move} works too — nearly as good as {best}.",
         "wrongNoBest": "{move} isn't it. Try again, or ask for a hint.",
         "hint": "Hint",
-        "show": "Show move"
+        "show": "Show move",
+        "hintPiece": "Hint: move your {piece}.",
+        "hintSquare": "Hint: move the highlighted piece.",
+        "shown": "Best move: {best}."
+      },
+      "startReview": "Start Review",
+      "backToSummary": "← Summary",
+      "overviewEyebrow": "Executive Report",
+      "overviewMoves": "{n, plural, one {# move} other {# moves}}",
+      "autoPlay": "Auto-play",
+      "pauseAutoPlay": "Pause auto-play",
+      "autoPlayHint": "Step automatically through the reviewed game",
+      "showMotifs": "Show motifs",
+      "hideMotifs": "Hide motifs",
+      "showMotifsHint": "Highlight tactical motifs on the board",
+      "previewBestBtn": "Best",
+      "previewBestHint": "Preview the engine's best move",
+      "jumpToClass": "{n} {cls} for {side} — jump to first",
+      "jumpToClassAny": "{cls} — jump to first move",
+      "jumpToPhase": "{phase} — jump to phase start",
+      "whiteSide": "White",
+      "blackSide": "Black",
+      "classHints": {
+        "brilliant": "A sound material sacrifice that keeps or improves your winning chances.",
+        "great": "The only move that preserves the advantage or turns the game around.",
+        "best": "Matches the engine's top choice in this position.",
+        "excellent": "Nearly indistinguishable from the engine's top move.",
+        "good": "Solid move with minimal loss of expected points.",
+        "book": "Standard opening theory.",
+        "forced": "The only legal move available.",
+        "inaccuracy": "A slight slip that concedes some initiative or edge.",
+        "mistake": "An error that noticeably worsens your position.",
+        "miss": "Overlooked a chance to punish an opponent's mistake or win.",
+        "blunder": "A decisive error that loses significant material or allows checkmate."
+      },
+      "guide": {
+        "button": "Shortcuts & guide",
+        "title": "Match Analysis Shortcuts & Guide",
+        "description": "Keyboard shortcuts and visual tools for reviewing every move.",
+        "shortcutsTitle": "Keyboard shortcuts",
+        "featuresTitle": "Interactive tools",
+        "close": "Close",
+        "shortcuts": {
+          "prev": "Previous move",
+          "next": "Next move",
+          "first": "Jump to start",
+          "last": "Jump to end",
+          "nextKey": "Next key moment",
+          "retry": "Retry current move",
+          "flip": "Flip board orientation",
+          "summary": "Toggle Summary / Guided",
+          "guide": "Open this guide",
+          "escape": "Clear preview, retry, or auto-play"
+        },
+        "features": {
+          "motifs": {
+            "title": "Tactical Motif Highlights",
+            "text": "Toggle Show motifs in Tactical Guide to ring hanging pieces, forks, pins, skewers, and sacrifices on the board."
+          },
+          "retry": {
+            "title": "2-Step Mistake Retry",
+            "text": "Play a better move on the board; use Hint to reveal the piece role and Show move for the best arrow."
+          },
+          "previews": {
+            "title": "Live Engine Line Previews",
+            "text": "Click any move chip in Best or Punished by to step through the continuation with a live EvalBar."
+          },
+          "playback": {
+            "title": "Executive Overview & Auto-Play",
+            "text": "Start from the Executive Report Card, step automatically with Auto-play, or return anytime with ← Summary."
+          }
+        }
       },
       "hint": "Use ← → or click a move to step through the game. Click the graph to jump.",
       "tabs": {
-        "summary": "Summary"
+        "guide": "Tactical Guide",
+        "moves": "Moves",
+        "summary": "Summary",
+        "drawer": "Match panels"
       },
       "newReview": "New review",
       "analyzePosition": "Analyze position",
@@ -784,7 +1027,8 @@
       "lastBook": "The last move of opening theory — from here on, the players are on their own.",
       "lastBookNamed": "The last move of opening theory ({opening}) — from here on, the players are on their own.",
       "tacticalGuide": "Tactical Guide",
-      "mobileControls": "Match navigation"
+      "mobileControls": "Match navigation",
+      "preview": "Position preview"
     }
   },
   "classes": {
@@ -896,8 +1140,21 @@
     "theme": "Theme",
     "anyTheme": "Any theme",
     "next": "Next puzzle",
+    "hint": "Hint",
+    "hintTooltip": "Highlight which piece should move next without failing the puzzle",
+    "hintShown": "Hint: move the highlighted piece.",
     "showSolution": "Show solution",
     "analyze": "Analyze",
+    "moves": "Moves",
+    "first": "First move",
+    "previous": "Previous move",
+    "nextMove": "Next move",
+    "last": "Latest move",
+    "replay": "Replay moves",
+    "stopReplay": "Pause replay",
+    "setupMove": "Setup",
+    "streakMilestone": "{n} in a row!",
+    "previewBadge": "Preview",
     "puzzleRating": "Puzzle rating",
     "fromGame": "From a Lichess game",
     "loading": "Loading",
@@ -934,15 +1191,43 @@
       "resignation": "by resignation",
       "timeout": "on time"
     },
-    "review": "Review game",
+    "review": "Match Analysis",
     "rematch": "Rematch",
     "newOpponent": "New opponent",
     "youOpen": "You have White. Your move.",
     "botOpens": "{name} opens.",
     "hint": "Hint",
+    "hintDesc": "Show the engine's best move",
     "takeback": "Takeback",
+    "takebackDesc": "Undo your last move",
     "resign": "Resign",
+    "resignDesc": "Resign the current game",
+    "moves": "Moves",
+    "first": "First move",
+    "previous": "Previous move",
+    "next": "Next move",
+    "last": "Live position",
+    "previewBadge": "Preview",
+    "returnLive": "Back to live",
+    "dismissOverlay": "Inspect board",
+    "showResult": "Show result",
+    "premoveHint": "Premove enabled — queue your next move while the bot thinks",
     "usage": "Hints used: {hints} · takebacks: {takebacks}",
+    "tabs": {
+      "moves": "Moves",
+      "info": "Match Info",
+      "opponent": "Opponent",
+      "timeControl": "Time control",
+      "copyFen": "Copy FEN",
+      "copied": "Copied"
+    },
+    "tiers": {
+      "casual": "Casual Club",
+      "club": "Tournament Circuit",
+      "master": "Master Class",
+      "grandmaster": "Grandmaster & Engine"
+    },
+    "recordBadge": "{w}W · {d}D · {l}L",
     "setup": {
       "title": "Play the bots",
       "subtitle": "Ten opponents from first steps to full Stockfish 19. Every game is saved on this device and can be reviewed.",
@@ -951,6 +1236,8 @@
       "random": "Random",
       "playBlack": "Play Black",
       "noClock": "No clock",
+      "customFen": "Custom starting position",
+      "clearFen": "Reset to start position",
       "note": "Strengths are approximate. Bots from 1320 up use Stockfish's built-in strength limit; the three easiest also make deliberate random moves."
     },
     "bots": {
@@ -968,30 +1255,33 @@
   },
   "home": {
     "hero": {
-      "live": "Analysis, review, puzzles, practice, bots and insights are live",
-      "title1": "Analyze chess,",
-      "title2": "free forever.",
-      "subtitle": "World-class engine analysis, match analysis, puzzles and bots — running right in your browser. No account, no paywall, no trackers.",
+      "live": "Stockfish 19 · Match Analysis · 7-piece tablebases · Local library",
+      "title1": "Study chess,",
+      "title2": "at master depth.",
+      "subtitle": "Stockfish 19 calculation, move-by-move Match Analysis, curated endgames, and ten bots — running locally right in your browser.",
       "cta": "Open analysis board",
       "setup": "Set up a position",
+      "resumeReview": "Continue: {white} vs {black}",
+      "recentPlayer": "Games: {name}",
       "badges": {
-        "free": "100% free",
+        "free": "Open source & offline-ready",
         "engine": "Stockfish 19 in your browser",
-        "noAccount": "No account"
+        "noAccount": "Local-first & private"
       }
     },
     "stats": {
       "label": "Kingside at a glance",
-      "free": "Free, every feature",
+      "free": "Core features unlocked",
       "engine": "Stockfish engine version",
       "pieces": "Piece sets",
       "boards": "Board themes",
-      "accounts": "Accounts needed"
+      "accounts": "Trackers or logins"
     },
     "features": {
-      "eyebrow": "Everything in one place",
-      "title": "Every tool a player needs, <em>none behind a paywall</em>",
-      "text": "Live tools are ready now. The rest is on the roadmap and lands phase by phase."
+      "eyebrow": "The Studio",
+      "title": "Every analytical tool a serious player needs, <em>under one roof</em>",
+      "text": "Eleven precision workspaces for match analysis, opening prep, tactical drills, and personal archiving.",
+      "flagship": "Flagship"
     },
     "review": {
       "eyebrow": "Match Analysis",
@@ -1014,24 +1304,24 @@
       }
     },
     "values": {
-      "eyebrow": "Our promise",
-      "title": "Free means <em>actually free</em>",
+      "eyebrow": "Built for focus",
+      "title": "Chess software that respects <em>your study time</em>",
       "items": {
         "account": {
-          "title": "No account, ever needed",
-          "text": "Open the site and start. Your games and settings stay on your device."
+          "title": "Instant workbench, zero friction",
+          "text": "Open any route, drop a PGN or FEN, and start calculating with everything saved on your device."
         },
         "ads": {
-          "title": "No ads, no trackers",
-          "text": "We don't sell your attention or your data. Nothing to opt out of."
+          "title": "Zero noise, zero tracking",
+          "text": "An uninterrupted study room with no banners, popups, or behavioral telemetry."
         },
         "device": {
           "title": "Engine runs on your device",
-          "text": "Stockfish 19 works in your browser, so analysis is fast and private."
+          "text": "Stockfish 19 NNUE runs locally inside your browser for responsive, private calculation."
         },
         "open": {
           "title": "Open source (AGPL-3.0)",
-          "text": "Every line is public. Anyone can check it, improve it or run their own."
+          "text": "Every line is public. Audit the evaluations, inspect the source, or self-host your own instance."
         }
       }
     },
@@ -1045,7 +1335,9 @@
       "title": "A board that looks <em>the way you like</em>",
       "text": "Pick colors and pieces here — your choice is saved on this device and used on every board.",
       "colors": "Board colors",
-      "pieces": "Pieces"
+      "pieces": "Pieces",
+      "badges": "Move badge preview",
+      "badgeOff": "Off"
     },
     "heroBoard": {
       "seek": "Move in game",
@@ -1157,11 +1449,11 @@
     },
     "openings": {
       "title": "Opening explorer",
-      "description": "Opening names, book moves and masters statistics for any position. Free, no account."
+      "description": "Opening names, ECO trees, and master statistics for any chess position."
     },
     "review": {
       "title": "Match Analysis",
-      "description": "Import your Lichess or Chess.com games and see every move rated by Stockfish 19. Free, no account."
+      "description": "Import your Lichess or Chess.com games and see every move rated by Stockfish 19."
     },
     "settings": {
       "title": "Settings",
@@ -1169,15 +1461,15 @@
     },
     "play": {
       "title": "Play the bots",
-      "description": "Play chess against ten bots from beginner to full Stockfish 19 strength. Free, no account."
+      "description": "Challenge ten distinct opponents from beginner to full Stockfish 19 strength."
     },
     "puzzles": {
       "title": "Puzzles",
-      "description": "Free rated chess puzzles by theme, puzzle streaks and a 3-minute rush. No account needed."
+      "description": "Rated chess puzzles by tactical theme, survival streaks, and a 3-minute rush."
     },
     "daily": {
       "title": "Daily puzzle",
-      "description": "One new chess puzzle every day, the same for everyone. Free, no account."
+      "description": "One shared daily puzzle for everyone with full continuation analysis."
     },
     "shared": {
       "title": "Shared game",
@@ -1192,18 +1484,18 @@
     },
     "analysis": {
       "title": "Analysis board",
-      "description": "Analyze any chess position or game with Stockfish 19, free and without an account."
+      "description": "Analyze any chess position or PGN with multi-line Stockfish 19 calculation in your browser."
     },
     "offline": {
       "title": "Offline"
     },
     "site": {
-      "title": "Kingside — free chess analysis",
-      "description": "Free chess analysis, match analysis, puzzles and bots with Stockfish 19. No account, no paywall."
+      "title": "Kingside — Chess Analysis Studio",
+      "description": "Client-side chess analysis, Match Analysis, puzzles, tablebases, and bots powered by Stockfish 19."
     },
     "practice": {
       "title": "Practice positions",
-      "description": "Classic checkmates, tactics and endgames to play out against Stockfish, plus drills from your own mistakes. Free, no account."
+      "description": "Classic checkmates, tactics, and endgames against Stockfish, plus drills from your own mistakes."
     },
     "insights": {
       "title": "Insights",
@@ -1297,16 +1589,24 @@
         "advantage": "The moves ran out without winning material."
       },
       "retry": "Try again",
+      "retryTooltip": "Restart this position",
       "next": "Next position",
       "back": "All positions",
       "hint": "Hint",
+      "hintTooltip": "Highlight which piece to move",
       "hintShown": "Hint: move the highlighted piece.",
       "moves": "Moves",
+      "first": "First move",
+      "previous": "Previous move",
+      "nextMove": "Next move",
+      "last": "Latest move",
+      "previewBadge": "Preview",
       "youPlay": "You play {color}",
       "white": "White",
       "black": "Black",
       "solved": "Solved",
-      "undo": "Take back"
+      "undo": "Take back",
+      "undoTooltip": "Take back your last move"
     },
     "drill": {
       "title": "From your games",
@@ -1447,7 +1747,22 @@
     "acpl": "Avg. centipawn loss",
     "record": "Won / drawn / lost",
     "trend": "Accuracy by game",
+    "metricAccuracy": "Accuracy",
+    "metricPrecision": "Precision",
+    "timeClasses": {
+      "all": "All",
+      "bullet": "Bullet",
+      "blitz": "Blitz",
+      "rapid": "Rapid",
+      "classical": "Classical"
+    },
     "trendAria": "Accuracy over your last {n} reviewed games",
+    "trendPointAria": "{acc}% accuracy in {players}",
+    "trendPointAriaDated": "{acc}% accuracy in {players} ({date})",
+    "trendOpenHint": "Open in Match Analysis",
+    "trendMissingPgn": "PGN not saved on this device",
+    "trendNoPgn": "The saved PGN for {players} is no longer on this device — import or review it again to inspect move by move.",
+    "trendOpenFailed": "That game's PGN could not be opened.",
     "needMore": "Review at least two games to see a trend.",
     "byPhase": "Accuracy by phase",
     "phases": {
@@ -1463,6 +1778,8 @@
     },
     "scorePct": "Score",
     "quality": "Move quality",
+    "qualityBreakdown": "Move quality distribution",
+    "qualitySegment": "{count, plural, one {# move} other {# moves}} ({pct}%)",
     "openings": "Openings",
     "opening": "Opening",
     "unknownOpening": "Unknown opening",

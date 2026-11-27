@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 "use client";
 
-import { BookOpen, ExternalLink, Loader2 } from "lucide-react";
+import { BookOpen, Check, Copy, ExternalLink, Loader2, Swords } from "lucide-react";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { colorOfPly, formatSan } from "@/lib/notation";
 import { useSettings } from "@/lib/settings-store";
 import { cn } from "@/lib/utils";
@@ -21,13 +23,13 @@ function ResultBar({ white, draws, black }: { white: number; draws: number; blac
   const total = white + draws + black || 1;
   const pct = (n: number) => Math.round((n / total) * 100);
   const parts = [
-    { n: white, cls: "bg-neutral-100 text-neutral-900" },
-    { n: draws, cls: "bg-neutral-400 text-neutral-900" },
-    { n: black, cls: "bg-neutral-800 text-neutral-100" },
+    { n: white, cls: "bg-[var(--eval-white-bg)] text-[var(--eval-white-fg)]" },
+    { n: draws, cls: "bg-[var(--eval-draw-bg)] text-[var(--eval-draw-fg)]" },
+    { n: black, cls: "bg-[var(--eval-black-bg)] text-[var(--eval-black-fg)]" },
   ];
   return (
     <span
-      className="flex h-5 w-full overflow-hidden rounded text-[10px] leading-5 font-semibold"
+      className="flex h-5 w-full overflow-hidden rounded border border-border/60 text-[10px] leading-5 font-semibold"
       role="img"
       aria-label={`White ${pct(white)}%, draw ${pct(draws)}%, Black ${pct(black)}%`}
     >
@@ -49,10 +51,12 @@ function StatsTable({
   result,
   ply,
   onPlay,
+  onPreviewMove,
 }: {
   result: ExplorerResult;
   ply: number;
   onPlay: (uci: string) => void;
+  onPreviewMove?: ((ucis: string[] | null) => void) | undefined;
 }) {
   const t = useTranslations("explorer");
   const notation = useSettings((s) => s.notation);
@@ -63,9 +67,23 @@ function StatsTable({
   const row = (m: ExplorerMove) => {
     const games = m.white + m.draws + m.black;
     return (
-      <tr key={m.uci} className="hover:bg-accent">
+      <tr
+        key={m.uci}
+        className="hover:bg-accent"
+        onMouseEnter={() => onPreviewMove?.([m.uci])}
+        onMouseLeave={() => onPreviewMove?.(null)}
+      >
         <td className="py-1 pr-2 pl-3">
-          <button type="button" className="font-mono text-sm font-semibold" onClick={() => onPlay(m.uci)}>
+          <button
+            type="button"
+            className="font-mono text-sm font-semibold"
+            onFocus={() => onPreviewMove?.([m.uci])}
+            onBlur={() => onPreviewMove?.(null)}
+            onClick={() => {
+              onPreviewMove?.(null);
+              onPlay(m.uci);
+            }}
+          >
             {formatSan(m.san, notation, color)}
           </button>
         </td>
@@ -80,7 +98,7 @@ function StatsTable({
     );
   };
   return (
-    <table className="w-full text-sm">
+    <table className="w-full text-sm" onMouseLeave={() => onPreviewMove?.(null)}>
       <thead className="text-left text-xs text-muted-foreground">
         <tr>
           <th className="py-1 pr-2 pl-3 font-medium">{t("move")}</th>
@@ -104,7 +122,17 @@ function StatsTable({
   );
 }
 
-function BookList({ fen, ply, onPlay }: { fen: string; ply: number; onPlay: (uci: string) => void }) {
+function BookList({
+  fen,
+  ply,
+  onPlay,
+  onPreviewMove,
+}: {
+  fen: string;
+  ply: number;
+  onPlay: (uci: string) => void;
+  onPreviewMove?: ((ucis: string[] | null) => void) | undefined;
+}) {
   const t = useTranslations("explorer");
   const notation = useSettings((s) => s.notation);
   const book = useBookMoves(fen, true);
@@ -112,12 +140,19 @@ function BookList({ fen, ply, onPlay }: { fen: string; ply: number; onPlay: (uci
   if (book.status === "error" || book.data.length === 0)
     return <p className="px-3 py-2 text-sm text-muted-foreground">{t("outOfBook")}</p>;
   return (
-    <ul className="pb-1">
+    <ul className="pb-1" onMouseLeave={() => onPreviewMove?.(null)}>
       {book.data.map((m) => (
         <li key={m.uci}>
           <button
             type="button"
-            onClick={() => onPlay(m.uci)}
+            onMouseEnter={() => onPreviewMove?.([m.uci])}
+            onMouseLeave={() => onPreviewMove?.(null)}
+            onFocus={() => onPreviewMove?.([m.uci])}
+            onBlur={() => onPreviewMove?.(null)}
+            onClick={() => {
+              onPreviewMove?.(null);
+              onPlay(m.uci);
+            }}
             className="flex w-full items-baseline gap-3 px-3 py-1 text-left hover:bg-accent"
           >
             <span className="w-14 shrink-0 font-mono text-sm font-semibold">
@@ -151,14 +186,17 @@ export function ExplorerPanel({
   fen,
   ply,
   onPlay,
+  onPreviewMove,
 }: {
   fen: string;
   /** Ply of the shown position (0 = start), used for figurine colors. */
   ply: number;
   onPlay: (uci: string) => void;
+  onPreviewMove?: ((ucis: string[] | null) => void) | undefined;
 }) {
   const t = useTranslations("explorer");
   const { explorerDb, update } = useSettings();
+  const [copiedFen, setCopiedFen] = useState(false);
   const source: Source = explorerDb;
   const online = useExplorer(fen, source === "book" ? null : source);
   const unavailable = online.status === "error";
@@ -193,9 +231,9 @@ export function ExplorerPanel({
 
       <div className="pt-1">
         {source === "book" ? (
-          <BookList fen={fen} ply={ply} onPlay={onPlay} />
+          <BookList fen={fen} ply={ply} onPlay={onPlay} onPreviewMove={onPreviewMove} />
         ) : online.status === "ok" ? (
-          <StatsTable result={online.data} ply={ply} onPlay={onPlay} />
+          <StatsTable result={online.data} ply={ply} onPlay={onPlay} onPreviewMove={onPreviewMove} />
         ) : unavailable ? (
           <>
             <p className="mx-3 my-2 rounded-lg bg-secondary px-3 py-2 text-xs text-muted-foreground">
@@ -205,7 +243,7 @@ export function ExplorerPanel({
                   ? t("fallbackRateLimited")
                   : t("fallbackError")}
             </p>
-            <BookList fen={fen} ply={ply} onPlay={onPlay} />
+            <BookList fen={fen} ply={ply} onPlay={onPlay} onPreviewMove={onPreviewMove} />
           </>
         ) : (
           <Spinner />
@@ -222,7 +260,7 @@ export function ExplorerPanel({
                   href={g.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 rounded px-1 py-0.5 hover:bg-accent"
+                  className="flex min-h-6 items-center gap-2 rounded px-1 py-0.5 hover:bg-accent"
                 >
                   <span className="w-8 shrink-0 font-mono text-muted-foreground">
                     {g.winner === "white" ? "1-0" : g.winner === "black" ? "0-1" : "½"}
@@ -243,6 +281,32 @@ export function ExplorerPanel({
       {source !== "book" && online.status === "ok" && (
         <p className="px-3 pt-1 text-[10px] text-muted-foreground/70">{t("attribution")}</p>
       )}
+
+      <div className="mt-2 flex flex-wrap items-center gap-1.5 border-t px-3 pt-2 text-xs">
+        <button
+          type="button"
+          onClick={async () => {
+            try {
+              await navigator.clipboard.writeText(fen);
+              setCopiedFen(true);
+              setTimeout(() => setCopiedFen(false), 1500);
+            } catch {
+              setCopiedFen(false);
+            }
+          }}
+          className="inline-flex min-h-7 items-center gap-1 rounded-md border bg-secondary/70 px-2 py-0.5 font-medium text-muted-foreground transition hover:border-primary/40 hover:text-foreground"
+        >
+          {copiedFen ? <Check className="size-3 text-primary" /> : <Copy className="size-3" />}
+          {copiedFen ? t("copied") : t("copyFen")}
+        </button>
+        <Link
+          href={`/play?fen=${encodeURIComponent(fen)}`}
+          className="inline-flex min-h-7 items-center gap-1 rounded-md border bg-secondary/70 px-2 py-0.5 font-medium text-muted-foreground transition hover:border-primary/40 hover:text-foreground"
+        >
+          <Swords className="size-3 text-primary" />
+          {t("playBot")}
+        </Link>
+      </div>
     </section>
   );
 }

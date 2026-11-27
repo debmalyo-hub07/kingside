@@ -48,8 +48,5 @@ frontend/AGENTS.md
 .claude/
 docs/history/
 
-# Vercel CLI links & legacy Vercel backend shims (local only)
+# Vercel CLI links (local only; backend/vercel.json & Vercel entry are tracked for GitHub auto-deploy)
 .vercel*
-/backend/vercel.json
-/backend/scripts/build-vercel.mjs
-/backend/src/vercel-entry.ts

@@ -27,6 +27,7 @@ import { judgeAlternativeMove, RETRY_TOLERANCE } from "@/features/review/retry-j
 import { answerDrill, type Drill, deleteDrills, listDrills } from "@/lib/local-db";
 import { formatSan } from "@/lib/notation";
 import { useSettings } from "@/lib/settings-store";
+import { playSound } from "@/lib/sounds";
 import { cn } from "@/lib/utils";
 
 const CHECK_NODES = 300_000;
@@ -79,7 +80,7 @@ export function DrillTrainer() {
 
   if (!drill || !pos) {
     return (
-      <div className="mx-auto max-w-lg space-y-4 py-16 text-center">
+      <div className="mx-auto max-w-lg space-y-4 py-16 text-center max-md:my-auto max-md:overflow-y-auto max-md:py-6">
         <h1 className="font-display text-4xl">{t("done")}</h1>
         <p className="text-muted-foreground">{t("comeBack")}</p>
         <div className="flex justify-center gap-2">
@@ -116,11 +117,13 @@ export function DrillTrainer() {
     const normalizedUci = node.uci ?? uci;
 
     if (normalizedUci === drill.bestUci || node.san === drill.bestSan) {
+      playSound("correct");
       setResult({ kind: "correct", tried });
       if (firstAttempt) void answerDrill(drill.id, true);
       return;
     }
     if (normalizedUci === drill.playedUci) {
+      playSound("wrong");
       setResult({ kind: "wrong", tried });
       if (firstAttempt) void answerDrill(drill.id, false);
       return;
@@ -165,6 +168,7 @@ export function DrillTrainer() {
         },
       });
       if (controller.signal.aborted || seq !== checkSeq.current) return;
+      playSound(kind === "wrong" ? "wrong" : "correct");
       setResult({ kind, tried });
       if (firstAttempt) void answerDrill(drillId, kind !== "wrong");
     } catch {
@@ -215,8 +219,8 @@ export function DrillTrainer() {
   const moveNo = `${Math.ceil(drill.ply / 2)}${drill.color === "white" ? "." : "…"}`;
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(300px,24rem)]">
-      <div className="mx-auto w-full max-w-[min(100%,calc(100dvh-12rem))] space-y-2">
+    <div className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-hidden md:grid md:flex-initial md:gap-4 md:overflow-visible lg:grid-cols-[minmax(0,1fr)_minmax(300px,24rem)]">
+      <div className="mx-auto w-full max-w-[min(100%,calc(100dvh-20rem))] shrink-0 space-y-1.5 md:max-w-[min(100%,calc(100dvh-12rem))] md:space-y-2">
         <ChessBoard
           sound
           fen={drill.fen}
@@ -250,7 +254,7 @@ export function DrillTrainer() {
           <BoardSettings />
         </div>
       </div>
-      <aside className="glass space-y-4 self-start rounded-2xl p-5">
+      <aside className="glass min-h-0 flex-1 space-y-3 overflow-y-auto rounded-2xl p-3 md:flex-initial md:space-y-4 md:self-start md:p-5">
         <Link
           href="/practice"
           className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"

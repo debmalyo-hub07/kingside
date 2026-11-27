@@ -197,6 +197,79 @@ export function promoteVariation(tree: GameTree, path: TreePath): void {
   if (node) parent.children.unshift(node);
 }
 
+/** Promotes a variation node all the way to `children[0]` at every ancestor branch point. */
+export function promoteToMainline(tree: GameTree, path: TreePath): void {
+  if (path.length === 0 || !nodeAtPath(tree, path)) return;
+  for (let i = 0; i < path.length; i++) {
+    const parent = nodeAtPath(tree, path.slice(0, i));
+    if (!parent) return;
+    const id = path[i];
+    const index = parent.children.findIndex((c) => c.id === id);
+    if (index > 0) {
+      const [node] = parent.children.splice(index, 1);
+      if (node) parent.children.unshift(node);
+    }
+  }
+}
+
+const PGN_COMMAND_RE = /\[%[a-zA-Z][a-zA-Z0-9_]*(?:\s+[^\]]*)?\]/g;
+const MOVE_EVAL_NAGS = new Set([1, 2, 3, 4, 5, 6, 7]);
+
+/** Extracts human-readable prose from PGN comments, stripping `[%clk ...]`, `[%eval ...]`, etc. */
+export function nodeCommentText(comments: readonly string[]): string {
+  return comments
+    .map((c) => c.replace(PGN_COMMAND_RE, "").replace(/\s+/g, " ").trim())
+    .filter(Boolean)
+    .join(" ");
+}
+
+/**
+ * Sets, replaces, or clears the user prose comment on the node at `path`,
+ * while preserving any existing `[%clk ...]` / `[%eval ...]` annotations cleanly.
+ */
+export function setNodeComment(tree: GameTree, path: TreePath, comment: string): void {
+  const node = nodeAtPath(tree, path);
+  if (!node) return;
+  const tags = node.comments.flatMap((c) => c.match(PGN_COMMAND_RE) ?? []);
+  const trimmed = comment.replace(/[{}]/g, "").trim();
+  node.comments = trimmed ? [...tags, trimmed] : tags;
+}
+
+/**
+ * Toggles a NAG on the move at `path`. Move-evaluation NAGs (`$1`–`$7`) are mutually
+ * exclusive and preserve any positional NAGs (e.g. `$10`, `$14`, `$16`).
+ */
+export function toggleNodeNag(tree: GameTree, path: TreePath, nag: number): void {
+  if (path.length === 0) return;
+  const node = nodeAtPath(tree, path);
+  if (!node) return;
+  const had = node.nags.includes(nag);
+  if (MOVE_EVAL_NAGS.has(nag)) {
+    const positional = node.nags.filter((n) => !MOVE_EVAL_NAGS.has(n));
+    node.nags = had ? positional : [nag, ...positional];
+    return;
+  }
+  node.nags = had ? node.nags.filter((n) => n !== nag) : [...node.nags, nag];
+}
+
+/**
+ * Computes the opponent-to-move "threat" FEN by safely swapping the side to move and clearing
+ * any en passant square. Returns `null` if the position is invalid or the side to move is in check.
+ */
+export function threatFen(fen: string): string | null {
+  try {
+    const pos = positionFromFen(fen);
+    const setup = pos.toSetup();
+    setup.turn = setup.turn === "white" ? "black" : "white";
+    setup.epSquare = undefined;
+    const flipped = Chess.fromSetup(setup);
+    if (flipped.isErr) return null;
+    return makeFen(flipped.value.toSetup());
+  } catch {
+    return null;
+  }
+}
+
 /** Removes the node at `path` and everything after it. Returns the parent path. */
 export function deleteFrom(tree: GameTree, path: TreePath): string[] {
   const parentPath = path.slice(0, -1);

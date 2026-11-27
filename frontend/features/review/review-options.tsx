@@ -83,12 +83,12 @@ export function ReviewOptionFields() {
   );
 }
 
-export function ReviewOptions() {
+export function ReviewOptions({ className }: { className?: string } = {}) {
   const t = useTranslations("reviewOptions");
   return (
     <Popover.Root>
       <Popover.Trigger asChild>
-        <Button variant="ghost" size="icon" aria-label={t("title")} title={t("title")}>
+        <Button variant="ghost" size="icon" className={className} aria-label={t("title")} title={t("title")}>
           <SlidersHorizontal />
         </Button>
       </Popover.Trigger>
@@ -96,7 +96,8 @@ export function ReviewOptions() {
         <Popover.Content
           align="end"
           sideOffset={6}
-          className="z-50 w-72 rounded-2xl border bg-popover p-4 text-popover-foreground shadow-xl animate-in fade-in-0 zoom-in-95"
+          collisionPadding={8}
+          className="z-50 max-h-[calc(var(--radix-popover-content-available-height)-8px)] w-72 max-w-[calc(100vw-1rem)] overflow-y-auto rounded-2xl border bg-popover p-4 text-popover-foreground shadow-xl animate-in fade-in-0 zoom-in-95"
         >
           <p className="mb-3 text-sm font-semibold">{t("title")}</p>
           <ReviewOptionFields />

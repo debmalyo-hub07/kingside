@@ -48,18 +48,18 @@ export function Stats() {
     <Reveal>
       <section
         aria-label={t("label")}
-        className="glass grid grid-cols-2 gap-6 rounded-3xl px-6 py-8 sm:grid-cols-3 lg:grid-cols-5"
+        className="panel-solid grid grid-cols-2 gap-6 rounded-3xl px-6 py-8 sm:grid-cols-3 lg:grid-cols-5"
       >
         {STATS.map((s) => (
           <div key={s.label} className="text-center">
-            <p className="font-display text-4xl text-gradient sm:text-5xl">
+            <p className="kpi-num text-3xl text-foreground sm:text-4xl">
               <CountUp
                 to={s.value}
                 prefix={"prefix" in s ? s.prefix : ""}
                 suffix={"suffix" in s ? s.suffix : ""}
               />
             </p>
-            <p className="mt-1 text-sm text-muted-foreground">{t(s.label)}</p>
+            <p className="mt-1.5 text-sm text-muted-foreground">{t(s.label)}</p>
           </div>
         ))}
       </section>

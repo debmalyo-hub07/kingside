@@ -5,7 +5,7 @@
 
 import { type ChildProcessWithoutNullStreams, spawn } from "node:child_process";
 import { accessSync, constants, existsSync } from "node:fs";
-import { type EngineLine, normalizeFen, positionFromFen } from "@kingside/chess-core";
+import { type EngineLine, isUnrelatedGameFen, normalizeFen, positionFromFen } from "@kingside/chess-core";
 import { parseInfoLine } from "@kingside/uci";
 
 export const SERVER_ENGINE_NAME = "Stockfish 19 NNUE";
@@ -149,6 +149,7 @@ export class ServerEngineRunner {
   } | null = null;
   private queue: PendingJob[] = [];
   private idleTimer: NodeJS.Timeout | null = null;
+  private lastFen: string | null = null;
   private shuttingDown = false;
 
   constructor(
@@ -274,6 +275,10 @@ export class ServerEngineRunner {
     };
 
     try {
+      if (this.lastFen !== null && isUnrelatedGameFen(this.lastFen, job.fen)) {
+        child.stdin.write("ucinewgame\n");
+      }
+      this.lastFen = job.fen;
       child.stdin.write(`setoption name MultiPV value ${job.multiPv}\n`);
       child.stdin.write(`position fen ${job.fen}\n`);
       child.stdin.write(job.depth !== undefined ? `go depth ${job.depth}\n` : `go nodes ${job.nodes}\n`);
@@ -432,6 +437,7 @@ export class ServerEngineRunner {
           this.readyPromise = null;
           this.readyBin = null;
           this.uciIdName = null;
+          this.lastFen = null;
         }
         if (this.activeJob) {
           const active = this.activeJob;
@@ -492,6 +498,7 @@ export class ServerEngineRunner {
     this.readyPromise = null;
     this.readyBin = null;
     this.uciIdName = null;
+    this.lastFen = null;
     if (proc) {
       try {
         proc.stdin.write("quit\n");

@@ -1,14 +1,17 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 "use client";
 
-import { explainMove, type MoveReview, type Reason } from "@kingside/chess-core";
-import { ChevronsRight, Eye, Lightbulb, RotateCcw, Undo2 } from "lucide-react";
+import { explainMove, type MoveReview, positionFromFen, type Reason } from "@kingside/chess-core";
+import { parseSquare } from "chessops/util";
+import { ChevronsRight, Crosshair, Eye, Lightbulb, RotateCcw, Sparkles, Undo2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { formatScore } from "@/components/eval-bar";
 import { Button } from "@/components/ui/button";
+import { HintTooltip } from "@/components/ui/tooltip";
 import { formatSan } from "@/lib/notation";
 import { useSettings } from "@/lib/settings-store";
 import { cn } from "@/lib/utils";
+import { motifShapesForReasons } from "./motif-shapes";
 import { MoveClassBadge } from "./move-classes";
 import { useReview } from "./review-store";
 
@@ -106,7 +109,11 @@ function LineChips({
             )}
           >
             {showNumber && (
-              <span className="opacity-60">
+              <span
+                className={
+                  active === i + 1 ? "mr-0.5 text-primary-foreground" : "mr-0.5 text-muted-foreground"
+                }
+              >
                 {color === "white" ? `${Math.ceil(ply / 2)}.` : `${Math.ceil(ply / 2)}…`}
               </span>
             )}
@@ -125,6 +132,8 @@ export function CoachCard({
   setRetry,
   preview,
   setPreview,
+  showMotifs = false,
+  onToggleMotifs,
   onRetryStart,
   onNextKey,
   hasNextKey,
@@ -135,6 +144,8 @@ export function CoachCard({
   setRetry: (r: RetryState | null) => void;
   preview: Preview | null;
   setPreview: (p: Preview | null) => void;
+  showMotifs?: boolean;
+  onToggleMotifs?: () => void;
   onRetryStart: () => void;
   onNextKey: () => void;
   hasNextKey: boolean;
@@ -152,7 +163,7 @@ export function CoachCard({
 
   if (!move) {
     return (
-      <div className="space-y-3 p-4">
+      <div className="space-y-2 p-3 md:space-y-3 md:p-4">
         {header}
         <p className="text-sm text-muted-foreground">{t("hint")}</p>
         {review && review.lastBookPly > 0 && (
@@ -171,6 +182,7 @@ export function CoachCard({
   const after = positions[move.ply];
   const uci = moves[move.ply - 1]?.uci ?? "";
   const reasons = before && after ? explainMove(move, before, after, uci, previous) : [];
+  const hasMotifs = motifShapesForReasons(reasons).length > 0;
   const san = (s: string, color: "white" | "black") => formatSan(s, notation, color);
   const spent = moveTimes[move.ply - 1];
   const notBest = !["best", "book", "forced", "brilliant", "great"].includes(move.classification);
@@ -180,7 +192,11 @@ export function CoachCard({
   });
 
   return (
-    <div className="space-y-3 p-4" aria-live="polite">
+    <div
+      key={move.ply}
+      className="space-y-2 p-3 animate-in fade-in slide-in-from-bottom-1 duration-200 motion-reduce:animate-none md:space-y-3 md:p-4"
+      aria-live="polite"
+    >
       {header}
       <div className="flex items-start gap-3">
         <MoveClassBadge cls={move.classification} className="mt-0.5 size-8 text-xs" />
@@ -190,7 +206,7 @@ export function CoachCard({
         </div>
         {move.scoreBefore && move.scoreAfter && (
           <span
-            className="shrink-0 rounded-lg bg-secondary px-2 py-1 font-mono text-xs"
+            className="surface-well shrink-0 rounded-lg px-2 py-1 font-mono text-xs tabular-nums"
             title={t("evalChange")}
           >
             {formatScore(move.scoreBefore)} → {formatScore(move.scoreAfter)}
@@ -244,9 +260,48 @@ export function CoachCard({
       </p>
 
       {retry ? (
-        <RetryPanel move={move} retry={retry} setRetry={setRetry} />
+        <RetryPanel move={move} beforeFen={before?.fen} retry={retry} setRetry={setRetry} />
       ) : (
         <div className="flex flex-wrap gap-2">
+          {showBest && (
+            <HintTooltip label={t("previewBestBtn")} description={t("previewBestHint")}>
+              <Button
+                size="sm"
+                variant="secondary"
+                aria-pressed={preview?.line === "best"}
+                className={cn(
+                  "border motion-reduce:transition-none",
+                  preview?.line === "best"
+                    ? "border-primary bg-primary/15 text-primary hover:bg-primary/20"
+                    : "border-transparent",
+                )}
+                onClick={() => setPreview(preview?.line === "best" ? null : { line: "best", plies: 1 })}
+              >
+                <Sparkles /> {t("previewBestBtn")}
+              </Button>
+            </HintTooltip>
+          )}
+          {hasMotifs && onToggleMotifs && (
+            <HintTooltip
+              label={showMotifs ? t("hideMotifs") : t("showMotifs")}
+              description={t("showMotifsHint")}
+            >
+              <Button
+                size="sm"
+                variant="secondary"
+                aria-pressed={showMotifs}
+                className={cn(
+                  "border motion-reduce:transition-none",
+                  showMotifs
+                    ? "border-primary bg-primary/15 text-primary hover:bg-primary/20"
+                    : "border-transparent",
+                )}
+                onClick={onToggleMotifs}
+              >
+                <Crosshair /> {showMotifs ? t("hideMotifs") : t("showMotifs")}
+              </Button>
+            </HintTooltip>
+          )}
           {RETRYABLE.has(move.classification) && (
             <Button size="sm" variant="secondary" onClick={onRetryStart}>
               <RotateCcw /> {t("retry.start")}
@@ -263,18 +318,42 @@ export function CoachCard({
   );
 }
 
+function hintPieceRole(beforeFen: string | undefined, bestUci: string | undefined) {
+  if (!beforeFen || !bestUci) return undefined;
+  try {
+    const sq = parseSquare(bestUci.slice(0, 2));
+    if (sq === undefined) return undefined;
+    return positionFromFen(beforeFen).board.get(sq)?.role;
+  } catch {
+    return undefined;
+  }
+}
+
 function RetryPanel({
   move,
+  beforeFen,
   retry,
   setRetry,
 }: {
   move: MoveReview;
+  beforeFen: string | undefined;
   retry: RetryState;
   setRetry: (r: RetryState | null) => void;
 }) {
   const t = useTranslations("review.report");
   const notation = useSettings((s) => s.notation);
   const best = move.bestSan ? formatSan(move.bestSan, notation, move.color) : "?";
+  const pieceRole = hintPieceRole(beforeFen, move.bestUci);
+
+  const pendingCopy =
+    retry.hint === 2
+      ? t("retry.shown", { best })
+      : retry.hint === 1
+        ? pieceRole
+          ? t("retry.hintPiece", { piece: t(`pieces.${pieceRole}`) })
+          : t("retry.hintSquare")
+        : t("retry.pending");
+
   return (
     <div
       className={cn(
@@ -285,7 +364,7 @@ function RetryPanel({
       )}
       role="status"
     >
-      {retry.result === "pending" && t("retry.pending")}
+      {retry.result === "pending" && pendingCopy}
       {retry.result === "checking" && t("retry.checking", { move: retry.tried ?? "" })}
       {retry.result === "correct" && t("retry.correct", { move: retry.tried ?? "" })}
       {retry.result === "alsoGood" && t("retry.alsoGood", { move: retry.tried ?? "", best })}

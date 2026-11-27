@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { Dialog } from "radix-ui";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { HintTooltip, TooltipProvider } from "@/components/ui/tooltip";
 import { usePositionErrorText } from "@/lib/use-position-error";
 import { useAnalysis } from "./analysis-store";
 
@@ -17,10 +18,25 @@ function looksLikeFen(text: string): boolean {
 }
 
 /** Paste a PGN or FEN to replace the current game. */
-export function LoadDialog() {
+export function LoadDialog({
+  open: controlledOpen,
+  onOpenChange,
+  trigger,
+}: {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  /** Custom trigger; `null` = no trigger (controlled dialog). */
+  trigger?: React.ReactNode | null;
+} = {}) {
   const t = useTranslations("analysis.load");
   const positionError = usePositionErrorText();
-  const [open, setOpen] = useState(false);
+  const [ownOpen, setOwnOpen] = useState(false);
+  const open = controlledOpen ?? ownOpen;
+  const setOpen = (v: boolean) => {
+    setOwnOpen(v);
+    onOpenChange?.(v);
+    if (!v) setError(null);
+  };
   const [text, setText] = useState("");
   const [error, setError] = useState<string | null>(null);
   const loadFen = useAnalysis((s) => s.loadFen);
@@ -46,11 +62,20 @@ export function LoadDialog() {
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
-      <Dialog.Trigger asChild>
-        <Button variant="ghost" size="icon" aria-label={t("button")}>
-          <FileInput />
-        </Button>
-      </Dialog.Trigger>
+      {trigger !== null &&
+        (trigger ? (
+          <Dialog.Trigger asChild>{trigger}</Dialog.Trigger>
+        ) : (
+          <TooltipProvider delayDuration={250}>
+            <HintTooltip label={t("button")} description={t("description")}>
+              <Dialog.Trigger asChild>
+                <Button variant="ghost" size="icon" aria-label={t("button")}>
+                  <FileInput />
+                </Button>
+              </Dialog.Trigger>
+            </HintTooltip>
+          </TooltipProvider>
+        ))}
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-40 bg-black/50" />
         <Dialog.Content className="fixed top-1/2 left-1/2 z-50 w-[min(36rem,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 rounded-xl border bg-card p-5 shadow-2xl">

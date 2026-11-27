@@ -2,6 +2,7 @@
 
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { MotionProvider } from "@/components/motion-provider";
 import { BoardEditor } from "@/features/editor/board-editor";
 import { PageMessages } from "@/i18n/client-messages";
 
@@ -20,7 +21,9 @@ export default async function EditorPage({
   return (
     <PageMessages ns={["editor"]}>
       <h1 className="sr-only">{(await getTranslations("meta.editor"))("title")}</h1>
-      <BoardEditor initialFen={initialFen} />
+      <MotionProvider>
+        <BoardEditor initialFen={initialFen} />
+      </MotionProvider>
     </PageMessages>
   );
 }

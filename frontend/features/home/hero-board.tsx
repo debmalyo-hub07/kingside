@@ -10,7 +10,6 @@ import { ChessBoard } from "@/components/board/chess-board";
 import { EvalBar, formatScore } from "@/components/eval-bar";
 import { useInView, usePrefersReducedMotion } from "@/lib/use-in-view";
 import { cn } from "@/lib/utils";
-import { whenIdle } from "@/lib/when-idle";
 import { type HeroPly, IMMORTAL, type LegendaryGame } from "./hero-game-data";
 import { LEGENDARY_IDS, loadLegendary, MOMENTS, useHeroGame } from "./legendary";
 
@@ -23,10 +22,14 @@ function moveLabel(plies: HeroPly[], ply: number): string {
   return ply % 2 === 1 ? `${n}. ${san}` : `${n}… ${san}`;
 }
 
-/** Eval sparkline across the whole game (White win %), with a playhead. */
+/** Eval sparkline across the whole game (White win %), with interactive hover/scrub readout. */
 function EvalGraph({ plies, ply, onSeek }: { plies: HeroPly[]; ply: number; onSeek: (ply: number) => void }) {
   const t = useTranslations("home.heroBoard");
-  const LAST = plies.length - 1;
+  const rangeRef = useRef<HTMLInputElement>(null);
+  const [hoverPly, setHoverPly] = useState<number | null>(null);
+  const [scrubbing, setScrubbing] = useState(false);
+
+  const LAST = Math.max(plies.length - 1, 1);
   const points = useMemo(
     () =>
       plies.map((p, i) => {
@@ -40,8 +43,21 @@ function EvalGraph({ plies, ply, onSeek }: { plies: HeroPly[]; ply: number; onSe
   const line = points.map(([x, y]) => `${x},${y}`).join(" ");
   const area = `0,100 ${line} 100,100`;
   const [px, py] = points[ply] ?? [0, 50];
+
+  const tipPly = hoverPly ?? (scrubbing ? ply : null);
+  const tipPoint = tipPly !== null ? (points[tipPly] ?? [0, 50]) : null;
+  const tipEntry = tipPly !== null ? plies[tipPly] : undefined;
+
+  const plyFromClientX = (clientX: number): number => {
+    const el = rangeRef.current;
+    if (!el || plies.length <= 1) return 0;
+    const rect = el.getBoundingClientRect();
+    const ratio = Math.max(0, Math.min(1, (clientX - rect.left) / Math.max(rect.width, 1)));
+    return Math.round(ratio * (plies.length - 1));
+  };
+
   return (
-    <div className="relative">
+    <div className="relative select-none">
       <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="h-14 w-full" aria-hidden>
         <line x1="0" y1="50" x2="100" y2="50" stroke="currentColor" strokeOpacity="0.15" strokeWidth="0.5" />
         <polygon points={area} className="fill-foreground/10" />
@@ -52,6 +68,18 @@ function EvalGraph({ plies, ply, onSeek }: { plies: HeroPly[]; ply: number; onSe
           strokeWidth="1.2"
           vectorEffect="non-scaling-stroke"
         />
+        {tipPoint && tipPly !== ply && (
+          <line
+            x1={tipPoint[0]}
+            y1="0"
+            x2={tipPoint[0]}
+            y2="100"
+            className="stroke-muted-foreground/50"
+            strokeWidth="0.8"
+            strokeDasharray="2 2"
+            vectorEffect="non-scaling-stroke"
+          />
+        )}
         <line
           x1={px}
           y1="0"
@@ -62,15 +90,92 @@ function EvalGraph({ plies, ply, onSeek }: { plies: HeroPly[]; ply: number; onSe
           vectorEffect="non-scaling-stroke"
         />
         <circle cx={px} cy={py} r="1.6" className="fill-gold" />
+        {tipPoint && tipPly !== ply && (
+          <circle cx={tipPoint[0]} cy={tipPoint[1]} r="1.4" className="fill-primary" />
+        )}
       </svg>
+
+      {tipPly !== null && tipPoint && tipEntry && (
+        <div
+          aria-hidden
+          data-testid="hero-sparkline-tooltip"
+          className="pointer-events-none absolute -top-9 z-20 flex items-center gap-1.5 whitespace-nowrap rounded-lg border bg-popover px-2 py-1 text-[11px] font-medium text-popover-foreground shadow-md"
+          style={{ left: `${tipPoint[0]}%`, transform: `translateX(-${tipPoint[0]}%)` }}
+        >
+          <span className="font-mono font-semibold">
+            {tipPly === 0 ? t("start") : moveLabel(plies, tipPly)}
+          </span>
+          <span className="rounded bg-secondary px-1.5 py-px font-mono text-[10px] font-semibold text-primary">
+            {formatScore(tipEntry.score)}
+          </span>
+        </div>
+      )}
+
       <input
+        ref={rangeRef}
         type="range"
         min={0}
-        max={LAST}
+        max={plies.length - 1}
         value={ply}
-        onChange={(e) => onSeek(Number(e.target.value))}
+        onPointerDown={(e) => {
+          if (e.button !== 0 && e.pointerType === "mouse") return;
+          e.preventDefault();
+          e.currentTarget.focus({ preventScroll: true });
+          try {
+            e.currentTarget.setPointerCapture(e.pointerId);
+          } catch {
+            // Synthetic pointer events in automated environments may lack an active pointerId.
+          }
+          const next = plyFromClientX(e.clientX);
+          setScrubbing(true);
+          setHoverPly(next);
+          onSeek(next);
+        }}
+        onPointerMove={(e) => {
+          const next = plyFromClientX(e.clientX);
+          if (scrubbing) {
+            if (e.pointerType === "mouse" && e.buttons === 0) {
+              setScrubbing(false);
+              setHoverPly(next);
+              return;
+            }
+            setHoverPly(next);
+            onSeek(next);
+            return;
+          }
+          if (e.pointerType === "mouse") {
+            setHoverPly(next);
+          }
+        }}
+        onPointerLeave={() => {
+          if (!scrubbing) setHoverPly(null);
+        }}
+        onPointerUp={(e) => {
+          try {
+            if (e.currentTarget.hasPointerCapture?.(e.pointerId)) {
+              e.currentTarget.releasePointerCapture(e.pointerId);
+            }
+          } catch {
+            // Ignore when synthetic pointer events were not captured.
+          }
+          setScrubbing(false);
+          if (e.pointerType !== "mouse") setHoverPly(null);
+        }}
+        onPointerCancel={() => {
+          setScrubbing(false);
+          setHoverPly(null);
+        }}
+        onFocus={() => setHoverPly(ply)}
+        onBlur={() => {
+          if (!scrubbing) setHoverPly(null);
+        }}
+        onChange={(e) => {
+          const next = Number(e.target.value);
+          setHoverPly(next);
+          onSeek(next);
+        }}
         aria-label={t("seek")}
-        className="absolute inset-0 size-full cursor-pointer opacity-0"
+        className="absolute inset-0 z-10 size-full cursor-pointer touch-none opacity-0"
       />
     </div>
   );
@@ -88,10 +193,8 @@ export function HeroBoard() {
   const inView = useInView(container, { amount: 0.3 });
   const [ply, setPly] = useState(0);
   const [playing, setPlaying] = useState(true);
-  // The demo starts a moment after the page has settled, so it never competes with loading.
-  const [ready, setReady] = useState(false);
-  useEffect(() => whenIdle(() => setTimeout(() => setReady(true), 1500)), []);
-  const autoplay = playing && ready && inView && !reduce;
+  // Advances once visible on screen while respecting reduced motion.
+  const autoplay = playing && inView && !reduce;
 
   // Switching games (arrows here, or "Watch" in the legendary games section) loads the game and restarts.
   useEffect(() => {
@@ -123,7 +226,15 @@ export function HeroBoard() {
   const current = plies[ply] ?? plies[0];
   const lastMove = current?.uci ? ([current.uci.slice(0, 2), current.uci.slice(2, 4)] as Key[]) : undefined;
   const gameId = game.id as (typeof LEGENDARY_IDS)[number];
-  const glyph = MOMENTS[gameId]?.[ply];
+  const gameMoments = MOMENTS[gameId] ?? {};
+  const momentPills = useMemo(
+    () =>
+      Object.entries(gameMoments)
+        .map(([k, g]) => ({ ply: Number(k), glyph: g }))
+        .filter((x) => Number.isFinite(x.ply) && Boolean(plies[x.ply])),
+    [gameMoments, plies],
+  );
+  const glyph = gameMoments[ply];
   const moment = glyph ? { glyph } : undefined;
   const inCheck = current?.san?.endsWith("+") || current?.san?.endsWith("#");
 
@@ -220,6 +331,35 @@ export function HeroBoard() {
           setPly(p);
         }}
       />
+      {momentPills.length > 0 && (
+        <div className="mt-2.5 flex flex-wrap items-center gap-1.5 px-0.5">
+          {momentPills.map((m) => {
+            const active = ply === m.ply;
+            return (
+              <button
+                key={m.ply}
+                type="button"
+                onClick={() => {
+                  setPlaying(false);
+                  setPly(m.ply);
+                }}
+                aria-pressed={active}
+                className={cn(
+                  "inline-flex min-h-6 items-center gap-1 rounded-full border px-2 py-0.5 font-mono text-[11px] transition",
+                  active
+                    ? "border-primary bg-primary/15 font-semibold text-primary"
+                    : "border-border/80 bg-surface-well text-muted-foreground hover:border-primary/40 hover:text-foreground",
+                )}
+              >
+                <span>{moveLabel(plies, m.ply)}</span>
+                <span className={m.glyph === "!!" ? "font-bold text-gold" : "font-bold text-primary"}>
+                  {m.glyph}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

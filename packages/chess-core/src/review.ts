@@ -677,6 +677,56 @@ export function criticalPositions(review: GameReview, positionCount: number): nu
   return picked;
 }
 
+export interface ClassifyMoveInput {
+  before: ReviewPosition;
+  after: ReviewPosition;
+  move: ReviewMove;
+  prevBefore?: ReviewPosition;
+  prevMove?: ReviewMove;
+  previous?: MoveClass;
+  isBook?: boolean;
+  rating?: number | null;
+}
+
+/**
+ * Classifies a single move given engine lines before and after the move.
+ * Returns null if `before` lacks engine lines or `after` lacks lines on a non-terminal position.
+ */
+export function classifyMove(input: ClassifyMoveInput): MoveClass | null {
+  const { before, after, move, prevBefore, prevMove, previous, isBook = false, rating = null } = input;
+  const pos = positionFromFen(before.fen);
+  const afterPos = positionFromFen(after.fen);
+  if (before.lines.length === 0) return null;
+  if (after.lines.length === 0 && !afterPos.isEnd()) return null;
+
+  const color = pos.turn;
+  const labelBefore = moverWin(positionWhiteLabel(before), color);
+  const labelAfter = moverWin(positionWhiteLabel(after), color);
+  const epLoss = Math.max(0, labelBefore - labelAfter) / 100;
+  const bestSan = before.lines[0] ? uciLineToSan(before.fen, before.lines[0].pv.slice(0, 1))[0] : undefined;
+  const playedBest = bestSan !== undefined && bestSan === move.san;
+
+  const ctx: ClassifyContext = {
+    pos,
+    afterPos,
+    ...(prevBefore ? { prevBefore } : {}),
+    before,
+    after,
+    move,
+    color,
+    winBefore: labelBefore,
+    winAfter: labelAfter,
+    epLoss,
+    playedBest,
+    isBook,
+    previous,
+    rating,
+    sacrifice: false,
+  };
+  ctx.sacrifice = isSacrifice(ctx);
+  return classify(ctx, prevMove);
+}
+
 // ---------- main ----------
 
 function emptyCounts(): Record<MoveClass, number> {

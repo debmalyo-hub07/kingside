@@ -9,6 +9,22 @@ export interface Castling {
   q: boolean;
 }
 
+export type EditorPresetId = "start" | "lucena" | "philidor" | "najdorf" | "caroKann" | "iqp";
+
+export interface EditorPreset {
+  id: EditorPresetId;
+  fen: string;
+}
+
+export const EDITOR_PRESETS: readonly EditorPreset[] = [
+  { id: "start", fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" },
+  { id: "lucena", fen: "1K1k4/1P6/8/8/8/8/r7/2R5 w - - 0 1" },
+  { id: "philidor", fen: "4k3/7R/r7/4PK2/8/8/8/8 b - - 0 1" },
+  { id: "najdorf", fen: "rnbqkb1r/1p2pppp/p2p1n2/8/3NP3/2N5/PPP2PPP/R1BQKB1R w KQkq - 0 6" },
+  { id: "caroKann", fen: "rnbqkbnr/pp2pppp/2p5/3p4/3PP3/8/PPP2PPP/RNBQKBNR w KQkq - 0 3" },
+  { id: "iqp", fen: "r1bq1rk1/pp2bppp/2n1pn2/8/3P4/2N2N2/PP2BPPP/R1BQ1RK1 w - - 0 9" },
+];
+
 /** Board part of a FEN -> map of square -> FEN char, for castling availability checks. */
 export function pieceAt(boardFen: string, square: string): string | undefined {
   const file = square.charCodeAt(0) - 97;

@@ -9,6 +9,7 @@ import { useId } from "react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SwitchField } from "@/components/ui/switch";
+import { HintTooltip, TooltipProvider } from "@/components/ui/tooltip";
 import { BOARD_THEMES } from "@/lib/board-themes";
 import { PIECE_SETS, pieceUrl } from "@/lib/piece-sets";
 import { useSettings } from "@/lib/settings-store";
@@ -118,15 +119,35 @@ export function BoardAppearanceFields() {
 }
 
 /** Board appearance dialog: palette, piece set, coordinates, animation. */
-export function BoardSettings() {
+export function BoardSettings({
+  className,
+  open,
+  onOpenChange,
+  trigger,
+}: {
+  className?: string;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  /** Custom trigger; `null` = no trigger (controlled dialog). */
+  trigger?: React.ReactNode | null;
+} = {}) {
   const tr = useTranslations("board");
   return (
-    <Dialog.Root>
-      <Dialog.Trigger asChild>
-        <Button variant="ghost" size="icon" aria-label={tr("title")}>
-          <Palette />
-        </Button>
-      </Dialog.Trigger>
+    <Dialog.Root {...(open !== undefined ? { open } : {})} {...(onOpenChange ? { onOpenChange } : {})}>
+      {trigger !== null &&
+        (trigger ? (
+          <Dialog.Trigger asChild>{trigger}</Dialog.Trigger>
+        ) : (
+          <TooltipProvider delayDuration={250}>
+            <HintTooltip label={tr("title")} description={tr("description")}>
+              <Dialog.Trigger asChild>
+                <Button variant="ghost" size="icon" className={className} aria-label={tr("title")}>
+                  <Palette />
+                </Button>
+              </Dialog.Trigger>
+            </HintTooltip>
+          </TooltipProvider>
+        ))}
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-40 bg-black/50 data-[state=open]:animate-in data-[state=open]:fade-in" />
         <Dialog.Content className="fixed top-1/2 left-1/2 z-50 max-h-[90dvh] w-[min(40rem,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-xl border bg-card p-5 shadow-2xl data-[state=open]:animate-in data-[state=open]:zoom-in-95">

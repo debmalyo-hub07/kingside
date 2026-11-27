@@ -77,12 +77,14 @@ function CopyField({ value, label }: { value: string; label: string }) {
 export function ShareDialog({
   target,
   trigger,
+  triggerClassName,
   open: controlledOpen,
   onOpenChange,
 }: {
   target: ShareTarget;
   /** Custom trigger; `null` = no trigger (controlled dialog). */
   trigger?: React.ReactNode | null;
+  triggerClassName?: string;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }) {
@@ -199,7 +201,7 @@ export function ShareDialog({
       {trigger !== null && (
         <Dialog.Trigger asChild>
           {trigger ?? (
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" className={triggerClassName}>
               <Share2 /> {t("button")}
             </Button>
           )}

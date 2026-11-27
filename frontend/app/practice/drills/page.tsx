@@ -2,6 +2,7 @@
 
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { MotionProvider } from "@/components/motion-provider";
 import { DrillTrainer } from "@/features/practice/drill-trainer";
 import { PageMessages } from "@/i18n/client-messages";
 
@@ -14,7 +15,9 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function DrillsPage() {
   return (
     <PageMessages ns={["practice"]}>
-      <DrillTrainer />
+      <MotionProvider>
+        <DrillTrainer />
+      </MotionProvider>
     </PageMessages>
   );
 }

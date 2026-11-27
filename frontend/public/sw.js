@@ -2,7 +2,7 @@
 // Kingside service worker (hand-written, no build step). Makes the analysis board work offline:
 // - pages: network first, cached copy when offline, /offline as last resort
 // - hashed build assets, pieces, data, icons: cache first
-// - Stockfish engine (~94 MB): cache first in its own cache, so it is downloaded once
+// - Stockfish engine (~99 MB): cache first in its own cache, so it is downloaded once
 // Only same-origin GET requests are handled; the backend API (other origin) is never cached here.
 
 const VERSION = "v1";
@@ -52,14 +52,22 @@ async function trim(cache, max) {
   for (let i = 0; i < keys.length - max; i++) await cache.delete(keys[i]);
 }
 
-async function cacheFirst(request, cacheName) {
+async function cacheFirst(request, cacheName, event) {
   const cache = await caches.open(cacheName);
   const hit = await cache.match(request);
   if (hit) return hit;
   const res = await fetch(request);
   if (res.ok && res.type === "basic") {
-    await cache.put(request, res.clone());
-    if (cacheName === ASSETS) void trim(cache, MAX_ASSETS);
+    const copy = res.clone();
+    const putPromise = cache
+      .put(request, copy)
+      .then(() => (cacheName === ASSETS ? trim(cache, MAX_ASSETS) : undefined))
+      .catch(() => undefined);
+    if (event && typeof event.waitUntil === "function") {
+      event.waitUntil(putPromise);
+    } else {
+      await putPromise;
+    }
   }
   return res;
 }
@@ -94,7 +102,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
   if (url.pathname.startsWith("/engine/")) {
-    event.respondWith(cacheFirst(request, ENGINE));
+    event.respondWith(cacheFirst(request, ENGINE, event));
     return;
   }
   if (
@@ -103,6 +111,6 @@ self.addEventListener("fetch", (event) => {
     url.pathname.startsWith("/data/") ||
     url.pathname.startsWith("/icons/")
   ) {
-    event.respondWith(cacheFirst(request, ASSETS));
+    event.respondWith(cacheFirst(request, ASSETS, event));
   }
 });

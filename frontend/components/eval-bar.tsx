@@ -42,29 +42,32 @@ export function EvalBar({
       aria-valuemax={100}
       aria-valuenow={Math.round(white)}
       aria-valuetext={`${label || t("even")}${badgeTitle ? ` (${badgeTitle})` : ""}`}
-      className={cn("relative w-full overflow-hidden rounded-md bg-neutral-800", className)}
+      className={cn(
+        "relative min-w-6 overflow-hidden rounded-md bg-[var(--eval-black-bg)] ring-1 ring-inset ring-border",
+        className,
+      )}
     >
       <div
         className={cn(
-          "absolute inset-x-0 bg-neutral-100 transition-[height] duration-500 ease-out motion-reduce:transition-none",
+          "absolute inset-x-0 bg-[var(--eval-white-bg)] transition-[height] duration-500 ease-out motion-reduce:transition-none",
           flipped ? "top-0" : "bottom-0",
         )}
         style={{ height: `${white}%` }}
       />
-      <div className="absolute inset-x-0 top-1/2 h-px bg-amber-500/60" />
+      <div className="absolute inset-x-0 top-1/2 h-px bg-[var(--eval-midline)]" />
       {badge && (
         <span
           title={badgeTitle}
-          className="absolute inset-x-0 top-1/2 mx-auto w-fit -translate-y-1/2 rounded bg-gold px-0.5 font-mono text-[8px] leading-3 font-bold text-neutral-900"
+          className="absolute inset-x-0 top-1/2 mx-auto w-fit -translate-y-1/2 rounded border border-black/20 bg-[var(--eval-tb-bg)] px-0.5 font-mono text-[8px] leading-3 font-bold text-[var(--eval-tb-fg)] shadow-xs"
         >
           {badge}
         </span>
       )}
       <span
         className={cn(
-          "absolute inset-x-0 text-center font-mono text-[9px] font-bold leading-6 tracking-tighter sm:text-[10px]",
+          "absolute inset-x-0 text-center font-mono text-[9px] font-bold leading-6 tracking-tighter tabular-nums sm:text-[10px]",
           whiteAhead !== flipped ? "bottom-0" : "top-0",
-          whiteAhead ? "text-neutral-800" : "text-neutral-100",
+          whiteAhead ? "text-[var(--eval-white-fg)]" : "text-[var(--eval-black-fg)]",
         )}
       >
         {label}

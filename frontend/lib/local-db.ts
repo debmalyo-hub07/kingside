@@ -2,7 +2,7 @@
 // Browser-local database (IndexedDB via Dexie). Holds only this device's data; never sent anywhere.
 "use client";
 
-import type { EngineLine } from "@kingside/chess-core";
+import type { EngineLine, MoveClass } from "@kingside/chess-core";
 import Dexie, { type EntityTable } from "dexie";
 
 export interface CachedEval {
@@ -85,6 +85,11 @@ export interface SavedReview {
   };
   counts: { white: Record<string, number>; black: Record<string, number> };
   moves: number;
+  classes?: MoveClass[];
+  /** Full PGN of the reviewed game (for instant reload/library/insights hydration). */
+  pgn?: string;
+  /** White win % series (0..100, start first) as a fallback when `db.evals` was pruned. */
+  whiteWin?: number[];
 }
 
 /** A mistake from a reviewed game, practiced with spaced repetition (Leitner boxes). */
@@ -164,6 +169,16 @@ class KingsideDb extends Dexie {
       drills: "id, due, gameHash",
       practice: "id",
     });
+    this.version(6).stores({
+      evals: "key, savedAt",
+      puzzleProfile: "id",
+      puzzleAttempts: "++id, puzzleId, at",
+      daily: "date",
+      games: "++id, playedAt, source, hash",
+      reviews: "gameHash, reviewedAt",
+      drills: "id, due, gameHash",
+      practice: "id",
+    });
   }
 }
 
@@ -205,9 +220,22 @@ export async function getCachedEval(
 ): Promise<EngineLine[] | null> {
   try {
     const hit = await withTimeout(getDb()?.evals.get(key) ?? Promise.resolve(undefined), 1500, undefined);
-    return hit && hit.depth >= depth && hit.multipv >= multipv ? hit.lines.slice(0, multipv) : null;
+    if (!hit || hit.depth < depth || hit.multipv < multipv || hit.lines.length < multipv) return null;
+    const sliced = hit.lines.slice(0, multipv);
+    if (!key.endsWith("|nodes") && sliced.some((l) => l.depth > 0 && l.depth < depth)) return null;
+    return sliced;
   } catch {
     return null;
+  }
+}
+
+export async function getCachedEvalsBatch(keys: readonly string[]): Promise<(CachedEval | undefined)[]> {
+  const d = getDb();
+  if (!d || keys.length === 0) return [];
+  try {
+    return await withTimeout(d.evals.bulkGet([...keys]), 2000, []);
+  } catch {
+    return [];
   }
 }
 
@@ -219,10 +247,30 @@ export async function putCachedEval(
 ): Promise<void> {
   const d = getDb();
   if (!d || lines.length === 0) return;
+  const storedLines = lines.slice(0, Math.max(1, multipv));
+  const actualMultiPv = storedLines.length;
+  const isNodeBudget = key.endsWith("|nodes");
+  const minPositiveLineDepth = storedLines.reduce(
+    (min, l) => (l.depth > 0 ? Math.min(min, l.depth) : min),
+    depth,
+  );
+  const effectiveDepth = isNodeBudget ? depth : Math.min(depth, minPositiveLineDepth);
   try {
     const old = await d.evals.get(key);
-    if (old && (old.depth > depth || (old.depth === depth && old.multipv >= multipv))) return;
-    await d.evals.put({ key, depth, multipv, lines, savedAt: Date.now() });
+    const oldValid = old && old.lines.length >= old.multipv;
+    if (
+      oldValid &&
+      (old.depth > effectiveDepth || (old.depth === effectiveDepth && old.multipv >= actualMultiPv))
+    ) {
+      return;
+    }
+    await d.evals.put({
+      key,
+      depth: effectiveDepth,
+      multipv: actualMultiPv,
+      lines: storedLines,
+      savedAt: Date.now(),
+    });
     if (Math.random() < 0.01 && (await d.evals.count()) > MAX_ENTRIES) {
       const oldest = await d.evals.orderBy("savedAt").limit(5_000).primaryKeys();
       await d.evals.bulkDelete(oldest);
@@ -305,6 +353,16 @@ export async function saveGame(game: Omit<SavedGame, "id" | "hash">): Promise<nu
   }
 }
 
+export async function getGameByHash(hash: string): Promise<SavedGame | undefined> {
+  const d = getDb();
+  if (!d) return undefined;
+  try {
+    return await withTimeout(d.games.where("hash").equals(hash).first(), 2000, undefined);
+  } catch {
+    return undefined;
+  }
+}
+
 export async function listGames(): Promise<SavedGame[]> {
   try {
     return await withTimeout(
@@ -332,6 +390,14 @@ export async function saveReview(review: SavedReview): Promise<void> {
     await withTimeout(getDb()?.reviews.put(review) ?? Promise.resolve(undefined), 2000, undefined);
   } catch {
     // best-effort
+  }
+}
+
+export async function getReview(gameHash: string): Promise<SavedReview | undefined> {
+  try {
+    return await withTimeout(getDb()?.reviews.get(gameHash) ?? Promise.resolve(undefined), 2000, undefined);
+  } catch {
+    return undefined;
   }
 }
 

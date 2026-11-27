@@ -374,7 +374,10 @@ export async function runReview({ nodes, recheckNodes }: ReviewBudget, signal: A
     const ended = fens.map((fen) => positionFromFen(fen).isEnd());
     const total = fens.length;
     let done = 0;
-    const tick = () => useReview.getState().setProgress(Math.min(++done, total), []);
+    const snapshotPositions = (): ReviewPosition[] =>
+      fens.map((fen, idx) => ({ fen, lines: lines[idx] ?? [] }));
+    const tick = (idx: number) =>
+      useReview.getState().setProgress(Math.min(++done, total), snapshotPositions(), idx);
 
     // 1. Opening positions from local cloud cache or /api/cloud-eval (continue across uncached plies).
     let cloudUnavailable = false;
@@ -387,7 +390,7 @@ export async function runReview({ nodes, recheckNodes }: ReviewBudget, signal: A
       if (cachedCloud) {
         lines[i] = cachedCloud;
         fromCloud.add(i);
-        tick();
+        tick(i);
         continue;
       }
       if (cloudUnavailable) continue;
@@ -402,7 +405,7 @@ export async function runReview({ nodes, recheckNodes }: ReviewBudget, signal: A
       const depth = cloudRes.lines[0]?.depth ?? CLOUD_MIN_DEPTH;
       // Lichess cloud-eval stays strictly in browser Dexie / RAM — never pushed to MongoDB EvalCache.
       void putCachedEval(cloudKey, depth, cloudRes.lines.length, cloudRes.lines);
-      tick();
+      tick(i);
     }
 
     // 2. Check local Dexie first for remaining positions.
@@ -415,7 +418,7 @@ export async function runReview({ nodes, recheckNodes }: ReviewBudget, signal: A
       if (cached) {
         lines[i] = cached;
         fromLocalOrShared.add(i);
-        tick();
+        tick(i);
       } else {
         dexieMisses.push(i);
       }
@@ -428,7 +431,7 @@ export async function runReview({ nodes, recheckNodes }: ReviewBudget, signal: A
         lines[idx] = hit.lines;
         fromLocalOrShared.add(idx);
         void putCachedEval(evalKey(fens[idx] as string, CACHE_ENGINE), hit.depth, hit.multipv, hit.lines);
-        tick();
+        tick(idx);
       }
     }
 
@@ -437,7 +440,7 @@ export async function runReview({ nodes, recheckNodes }: ReviewBudget, signal: A
       if (signal.aborted) return;
       if (fromCloud.has(i) || fromLocalOrShared.has(i)) continue;
       if (!ended[i]) lines[i] = await computeAndCache(fens[i] as string, nodes, PASS1_MULTI_PV);
-      tick();
+      tick(i);
     }
 
     const data = await openings;
@@ -484,6 +487,7 @@ export async function runReview({ nodes, recheckNodes }: ReviewBudget, signal: A
       if (cached) {
         if (!isSameTopLine(lines[i], cached)) pass1Lines[i] = lines[i];
         lines[i] = cached;
+        useReview.getState().setProgress(total, snapshotPositions(), i);
         useReview.getState().tickRecheck();
       } else {
         pass2Misses.push(i);
@@ -499,11 +503,13 @@ export async function runReview({ nodes, recheckNodes }: ReviewBudget, signal: A
           if (!isSameTopLine(lines[i], hit.lines)) pass1Lines[i] = lines[i];
           lines[i] = hit.lines;
           void putCachedEval(evalKey(fens[i] as string, CACHE_ENGINE), hit.depth, hit.multipv, hit.lines);
+          useReview.getState().setProgress(total, snapshotPositions(), i);
           useReview.getState().tickRecheck();
           continue;
         }
         pass1Lines[i] = lines[i];
         lines[i] = await computeAndCache(fens[i] as string, recheckNodes, PASS2_MULTI_PV);
+        useReview.getState().setProgress(total, snapshotPositions(), i);
         useReview.getState().tickRecheck();
       }
     }

@@ -26,9 +26,10 @@ import {
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ChessBoard } from "@/components/board/chess-board";
+import { BoardModeToggles } from "@/components/board/board-mode-toggles";
+import { type BoardInteractionMode, ChessBoard } from "@/components/board/chess-board";
 import { EvalBar } from "@/components/eval-bar";
-import { EvalGraph, type GraphMarker } from "@/components/eval-graph";
+import { EvalGraph, type GraphMarker, type GraphPointMeta } from "@/components/eval-graph";
 import { Button } from "@/components/ui/button";
 import { useAnalysis } from "@/features/analysis/analysis-store";
 import {
@@ -41,6 +42,7 @@ import {
 import { useReview } from "@/features/review/review-store";
 import { saveGame } from "@/lib/local-db";
 import { colorOfPly, formatSan } from "@/lib/notation";
+import { scrollChildIntoContainer } from "@/lib/scroll-container";
 import { useSettings } from "@/lib/settings-store";
 import { cn } from "@/lib/utils";
 import type { SharedAnalysis } from "./share-actions";
@@ -77,6 +79,7 @@ export function GameViewer({ game, embed = false }: { game: SharedGame; embed?: 
   const max = nodes.length - 1;
   const [ply, setPly] = useState(max);
   const [orientation, setOrientation] = useState(game.orientation);
+  const [boardMode, setBoardMode] = useState<BoardInteractionMode>("play");
   const [saved, setSaved] = useState(false);
   const moveList = useRef<HTMLOListElement>(null);
 
@@ -126,9 +129,8 @@ export function GameViewer({ game, embed = false }: { game: SharedGame; embed?: 
   }, [ply, max, seek]);
 
   useEffect(() => {
-    moveList.current
-      ?.querySelector<HTMLElement>(`[data-ply="${ply}"]`)
-      ?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    const el = moveList.current?.querySelector<HTMLElement>(`[data-ply="${ply}"]`);
+    scrollChildIntoContainer(moveList.current, el);
   }, [ply]);
 
   const node = nodes[ply] ?? tree.root;
@@ -136,9 +138,34 @@ export function GameViewer({ game, embed = false }: { game: SharedGame; embed?: 
   const lastMove = node.uci ? ([node.uci.slice(0, 2), node.uci.slice(2, 4)] as Key[]) : undefined;
   const a = game.analysis;
   const classes = (a?.classes ?? []) as MoveClass[];
-  const markers: GraphMarker[] = classes.flatMap((c, i) =>
-    MARKED.has(c) ? [{ index: i + 1, color: CLASS_META[c].color, label: classLabel(c) }] : [],
-  );
+  const markers: GraphMarker[] = classes.flatMap((c, i) => {
+    const n = nodes[i + 1];
+    return MARKED.has(c)
+      ? [
+          {
+            index: i + 1,
+            color: CLASS_META[c].color,
+            ringColor: CLASS_META[c].ring,
+            label: classLabel(c),
+            ...(n?.san
+              ? {
+                  san: `${Math.ceil(n.ply / 2)}${n.ply % 2 === 1 ? "." : "…"} ${formatSan(n.san, notation, colorOfPly(n.ply))}`,
+                }
+              : {}),
+          },
+        ]
+      : [];
+  });
+  const graphMeta: (GraphPointMeta | undefined)[] = [
+    undefined,
+    ...nodes.slice(1).map((n, i) => {
+      const c = classes[i];
+      return {
+        san: `${Math.ceil(n.ply / 2)}${n.ply % 2 === 1 ? "." : "…"} ${formatSan(n.san ?? "", notation, colorOfPly(n.ply))}`,
+        ...(c ? { classification: classLabel(c) } : {}),
+      };
+    }),
+  ];
   const white = header(tree, "White") ?? t("white");
   const black = header(tree, "Black") ?? t("black");
   const result = header(tree, "Result") ?? "*";
@@ -148,7 +175,12 @@ export function GameViewer({ game, embed = false }: { game: SharedGame; embed?: 
 
   const openIn = (where: "analysis" | "review") => {
     if (where === "analysis") {
-      useAnalysis.getState().loadPgn(game.pgn);
+      useAnalysis.getState().loadPgn(game.pgn, {
+        ply,
+        orientation,
+        ...(classes.length > 0 ? { classes } : {}),
+        ...(a?.whiteWin?.length ? { whiteWin: a.whiteWin } : {}),
+      });
       router.push("/analysis");
     } else {
       try {
@@ -191,7 +223,7 @@ export function GameViewer({ game, embed = false }: { game: SharedGame; embed?: 
       aria-label={t("moves")}
       className={cn(
         "grid grid-cols-[2.5rem_1fr_1fr] content-start gap-y-0.5 overflow-y-auto p-2 text-sm",
-        embed ? "max-h-full" : "max-h-[min(50vh,28rem)]",
+        embed ? "max-h-full" : "min-h-0 flex-1 md:max-h-[min(50vh,28rem)]",
       )}
     >
       {nodes.slice(1).map((n, i) => {
@@ -209,7 +241,7 @@ export function GameViewer({ game, embed = false }: { game: SharedGame; embed?: 
               p === ply && "bg-primary text-primary-foreground hover:bg-primary",
             )}
           >
-            {c && MARKED.has(c) && <MoveClassBadge cls={c} className="size-4 text-[8px]" />}
+            {c && MARKED.has(c) && <MoveClassBadge cls={c} className="size-4" />}
             {formatSan(n.san ?? "", notation, colorOfPly(n.ply))}
           </button>
         );
@@ -230,13 +262,13 @@ export function GameViewer({ game, embed = false }: { game: SharedGame; embed?: 
   );
 
   const board = (
-    <div className="flex min-w-0 gap-2">
+    <div className="flex min-w-0 gap-1.5 md:gap-2">
       {a && (
         <EvalBar
           score={undefined}
           whiteWin={a.whiteWin[ply]}
           orientation={orientation}
-          className="w-5 shrink-0 sm:w-6"
+          className="w-6 shrink-0 sm:w-7"
         />
       )}
       <div className="relative min-w-0 flex-1">
@@ -247,6 +279,8 @@ export function GameViewer({ game, embed = false }: { game: SharedGame; embed?: 
           turnColor={pos.turn}
           lastMove={lastMove}
           check={pos.isCheck()}
+          interactionMode={embed ? "play" : boardMode}
+          onSwipe={(dir) => seek(dir === "next" ? ply + 1 : ply - 1)}
           label={t("boardLabel", { white, black })}
         >
           {cls && node.uci && (
@@ -283,27 +317,92 @@ export function GameViewer({ game, embed = false }: { game: SharedGame; embed?: 
   }
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(300px,24rem)]">
-      <div className="min-w-0 space-y-2">
-        <div className="mx-auto w-full max-w-[min(100%,calc(100dvh-12rem))]">{board}</div>
-        {a && <EvalGraph whiteWin={a.whiteWin} index={ply} onSeek={seek} markers={markers} />}
-        {navButtons}
+    <div className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-hidden md:grid md:flex-initial md:gap-4 md:overflow-visible lg:grid-cols-[minmax(0,1fr)_minmax(300px,24rem)]">
+      <div className="min-w-0 shrink-0 space-y-1.5 md:space-y-2">
+        <div className="mx-auto w-full max-w-[min(100%,calc(100dvh-21rem))] md:max-w-[min(100%,calc(100dvh-12rem))]">
+          {board}
+        </div>
+        <nav
+          aria-label={t("mobileControls")}
+          className="flex shrink-0 flex-nowrap items-center gap-0.5 rounded-xl border bg-card/90 p-1 shadow-sm backdrop-blur-xl md:hidden"
+        >
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-10 min-w-0 flex-1 px-0"
+            aria-label={t("first")}
+            onClick={() => seek(0)}
+          >
+            <ChevronFirst />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-10 min-w-0 flex-1 px-0"
+            aria-label={t("previous")}
+            onClick={() => seek(ply - 1)}
+          >
+            <ChevronLeft />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-10 min-w-0 flex-1 px-0"
+            aria-label={t("next")}
+            onClick={() => seek(ply + 1)}
+          >
+            <ChevronRight />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-10 min-w-0 flex-1 px-0"
+            aria-label={t("last")}
+            onClick={() => seek(max)}
+          >
+            <ChevronLast />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-10 min-w-0 flex-1 px-0"
+            aria-label={t("flip")}
+            onClick={() => setOrientation((o) => (o === "white" ? "black" : "white"))}
+          >
+            <FlipVertical2 />
+          </Button>
+          <BoardModeToggles
+            mode={boardMode}
+            onModeChange={setBoardMode}
+            buttonClassName="h-10 min-w-0 flex-1 px-0"
+          />
+        </nav>
+        {a && (
+          <EvalGraph
+            whiteWin={a.whiteWin}
+            index={ply}
+            onSeek={seek}
+            markers={markers}
+            meta={graphMeta}
+            compact
+          />
+        )}
+        <div className="hidden md:block">{navButtons}</div>
       </div>
-      <aside className="glass flex min-w-0 flex-col overflow-hidden rounded-2xl">
-        <div className="space-y-1 border-b p-4">
-          <h1 className="text-lg font-semibold">
+      <aside className="glass flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl md:flex-initial">
+        <div className="shrink-0 space-y-0.5 border-b px-3 py-2 md:space-y-1 md:p-4">
+          <h1 className="truncate text-sm font-semibold md:text-lg">
             {white} <span className="text-muted-foreground">{t("vs")}</span> {black}
           </h1>
-          <p className="text-sm text-muted-foreground">{[result, event, date].filter(Boolean).join(" · ")}</p>
-          {a && (a.accuracy.white !== null || a.accuracy.black !== null) && (
-            <p className="text-sm">
-              {t("accuracy")}: <span className="font-mono">{a.accuracy.white?.toFixed(1) ?? "–"}</span> /{" "}
-              <span className="font-mono">{a.accuracy.black?.toFixed(1) ?? "–"}</span>
-            </p>
-          )}
+          <p className="truncate text-xs text-muted-foreground md:text-sm">
+            {[result, event, date].filter(Boolean).join(" · ")}
+            {a && (a.accuracy.white !== null || a.accuracy.black !== null)
+              ? ` · ${a.accuracy.white?.toFixed(1) ?? "–"} / ${a.accuracy.black?.toFixed(1) ?? "–"}`
+              : ""}
+          </p>
         </div>
         {moves}
-        <div className="mt-auto flex flex-wrap gap-1 border-t p-2">
+        <div className="mt-auto flex shrink-0 items-center gap-1 border-t p-1.5 max-md:flex-nowrap max-md:overflow-x-auto md:flex-wrap md:p-2">
           <Button variant="ghost" size="sm" onClick={() => openIn("analysis")}>
             <LineChart /> {t("analyze")}
           </Button>

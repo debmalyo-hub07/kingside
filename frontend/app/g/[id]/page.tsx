@@ -2,6 +2,7 @@
 
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { MotionProvider } from "@/components/motion-provider";
 import { SharedGameLoader } from "@/features/share/shared-game-loader";
 import { PageMessages } from "@/i18n/client-messages";
 
@@ -14,7 +15,9 @@ export default async function SharedGamePage({ params }: { params: Promise<{ id:
   const { id } = await params;
   return (
     <PageMessages ns={["viewer", "share"]}>
-      <SharedGameLoader id={id.slice(0, 16)} />
+      <MotionProvider>
+        <SharedGameLoader id={id.slice(0, 16)} />
+      </MotionProvider>
     </PageMessages>
   );
 }

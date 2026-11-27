@@ -36,10 +36,12 @@ export function TablebasePanel({
   state,
   ply,
   onPlay,
+  onPreviewMove,
 }: {
   state: Loadable<TablebaseResult>;
   ply: number;
   onPlay: (uci: string) => void;
+  onPreviewMove?: ((ucis: string[] | null) => void) | undefined;
 }) {
   const t = useTranslations("tablebase");
   const notation = useSettings((s) => s.notation);
@@ -89,14 +91,21 @@ export function TablebasePanel({
           </span>
         )}
       </div>
-      <ul>
+      <ul onMouseLeave={() => onPreviewMove?.(null)}>
         {r.moves.map((m) => {
           const mv = moveVerdict(m);
           return (
             <li key={m.uci}>
               <button
                 type="button"
-                onClick={() => onPlay(m.uci)}
+                onMouseEnter={() => onPreviewMove?.([m.uci])}
+                onMouseLeave={() => onPreviewMove?.(null)}
+                onFocus={() => onPreviewMove?.([m.uci])}
+                onBlur={() => onPreviewMove?.(null)}
+                onClick={() => {
+                  onPreviewMove?.(null);
+                  onPlay(m.uci);
+                }}
                 className="flex w-full items-center gap-3 px-3 py-1 text-left hover:bg-accent"
               >
                 <span className="w-16 shrink-0 font-mono text-sm font-semibold">

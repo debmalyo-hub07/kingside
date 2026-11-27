@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 "use client";
 
-import { positionFromFen } from "@kingside/chess-core";
+import { positionFromFen, winPercentFromScore } from "@kingside/chess-core";
 import { FileSearch, LineChart, Play } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -85,20 +85,30 @@ export function LegendaryGames() {
     <section id="legendary" className="scroll-mt-24" ref={ref}>
       <SectionHeading
         eyebrow={t("eyebrow")}
-        title={t.rich("title", { em: (c) => <em className="text-gradient">{c}</em> })}
+        title={t.rich("title", { em: (c) => <em className="italic font-medium text-gold">{c}</em> })}
         text={t("text")}
       />
       {!games ? (
         <p className="text-center text-sm text-muted-foreground">{t("loading")}</p>
       ) : (
-        <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="-mx-2 flex snap-x snap-mandatory gap-4 overflow-x-auto px-2 pb-4 lg:mx-0 lg:grid lg:grid-cols-3 lg:overflow-visible lg:px-0 lg:pb-0">
           {games.map((g, i) => {
             const id = g.id as LegendaryId;
             const final = g.plies[g.plies.length - 1];
+            const lastIdx = Math.max(g.plies.length - 1, 1);
+            const sparkPts = g.plies
+              .map((p, idx) => {
+                const w = p.score.mate === 0 ? (idx % 2 === 1 ? 100 : 0) : winPercentFromScore(p.score);
+                return `${Math.round((idx / lastIdx) * 100)},${Math.round(100 - w)}`;
+              })
+              .join(" ");
             return (
-              <li key={g.id}>
+              <li
+                key={g.id}
+                className="w-[82vw] max-w-xs shrink-0 snap-start sm:w-[20rem] lg:w-auto lg:max-w-none"
+              >
                 <Reveal delay={0.05 * (i % 3)} className="h-full">
-                  <article className="glass flex h-full flex-col gap-3 rounded-3xl p-4">
+                  <article className="panel-solid flex h-full flex-col gap-3 rounded-3xl p-4 transition-transform duration-300 hover:-translate-y-1 hover:border-primary/40 motion-reduce:hover:translate-y-0">
                     <MiniBoard fen={final?.fen ?? ""} last={final?.uci} label={t(`games.${id}.title`)} />
                     <div className="min-w-0 flex-1">
                       <h3 className="font-display text-2xl leading-tight">{t(`games.${id}.title`)}</h3>
@@ -109,6 +119,29 @@ export function LegendaryGames() {
                         {t(`games.${id}.note`)}
                       </p>
                     </div>
+                    <svg
+                      viewBox="0 0 100 100"
+                      preserveAspectRatio="none"
+                      aria-hidden
+                      className="surface-well h-7 w-full rounded-lg px-0.5"
+                    >
+                      <line
+                        x1="0"
+                        y1="50"
+                        x2="100"
+                        y2="50"
+                        stroke="currentColor"
+                        strokeOpacity="0.12"
+                        strokeWidth="0.6"
+                      />
+                      <polyline
+                        points={sparkPts}
+                        fill="none"
+                        className="stroke-primary"
+                        strokeWidth="1.4"
+                        vectorEffect="non-scaling-stroke"
+                      />
+                    </svg>
                     <div className="flex flex-wrap gap-1.5">
                       <Button
                         size="sm"

@@ -17,7 +17,7 @@ export function ReviewSteps() {
     <section id="review" className="scroll-mt-24">
       <SectionHeading
         eyebrow={t("eyebrow")}
-        title={t.rich("title", { em: (c) => <em className="text-gradient">{c}</em> })}
+        title={t.rich("title", { em: (c) => <em className="italic font-medium text-primary">{c}</em> })}
       />
       <div className="relative">
         <span
@@ -30,7 +30,7 @@ export function ReviewSteps() {
               key={key}
               delay={i * 0.1}
               as="li"
-              className="glass relative h-full rounded-3xl p-6 text-center"
+              className="panel-solid relative h-full rounded-3xl p-6 text-center"
             >
               <span className="mx-auto mb-4 grid size-12 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/30">
                 <Icon className="size-5" />
@@ -68,12 +68,12 @@ export function Values() {
     <section id="values" className="scroll-mt-24">
       <SectionHeading
         eyebrow={t("eyebrow")}
-        title={t.rich("title", { em: (c) => <em className="text-gradient">{c}</em> })}
+        title={t.rich("title", { em: (c) => <em className="italic font-medium text-foreground">{c}</em> })}
       />
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {VALUES.map(({ icon: Icon, key }, i) => (
           <Reveal key={key} delay={i * 0.06} className="h-full">
-            <div className="glass h-full rounded-3xl p-6">
+            <div className="panel-solid h-full rounded-3xl p-6">
               <Icon className="mb-4 size-6 text-gold" aria-hidden />
               <h3 className="font-semibold">{t(`items.${key}.title`)}</h3>
               <p className="mt-2 text-sm text-muted-foreground">{t(`items.${key}.text`)}</p>

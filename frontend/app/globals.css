@@ -4,65 +4,153 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * "Midnight emerald" design tokens. Kingside's own palette — do not copy Chess.com/Lichess colors
- * (docs/LICENSING.md). Dark is the signature look; light mode keeps the same accents.
+ * "Midnight emerald v2" design tokens. Kingside's own palette — do not copy Chess.com/Lichess colors
+ * (docs/LICENSING.md). Dark Obsidian is the signature look; Light Alabaster keeps AA contrast.
  */
 :root {
   --radius: 0.85rem;
-  --background: #f6f8fb;
+  --background: #f5f6f2;
   --foreground: #0f172a;
-  --card: rgb(255 255 255 / 0.75);
+  --card: rgb(255 255 255 / 0.84);
   --card-solid: #ffffff;
+  --surface-well: #eaece6;
   --card-foreground: var(--foreground);
   --popover: #ffffff;
   --popover-foreground: var(--foreground);
-  /* emerald-700: 5.5:1 against white text (WCAG AA); #059669 was only 3.8:1. */
-  --primary: #047857;
+  /* Deep Midnight Emerald: >= 4.53:1 even on bg-primary/15 over --surface-well (#eaece6). */
+  --primary: #03694b;
   --primary-foreground: #ffffff;
-  --secondary: #eef2f7;
+  --secondary: #eaece6;
   --secondary-foreground: var(--foreground);
-  --muted: #eef2f7;
-  --muted-foreground: #5b6b82;
-  --accent: #e3f5ee;
+  --muted: #eaece6;
+  --muted-foreground: #525e70;
+  --accent: #dcf2ea;
   --accent-foreground: var(--foreground);
-  --gold: #b7791f;
-  --destructive: #dc2626;
-  --border: rgb(15 23 42 / 0.1);
-  --input: rgb(15 23 42 / 0.14);
-  --ring: #047857;
-  --glow-emerald: rgb(16 185 129 / 0.16);
-  --glow-gold: rgb(245 197 107 / 0.18);
+  --gold: #8b5500;
+  --warning: #b33b0a;
+  --destructive: #b01a1a;
+  --border: rgb(15 23 42 / 0.11);
+  --input: rgb(15 23 42 / 0.16);
+  --ring: #03694b;
+  --glow-emerald: rgb(16 185 129 / 0.14);
+  --glow-gold: rgb(234 179 84 / 0.15);
+  --panel-highlight: rgb(255 255 255 / 0.9);
+  --panel-shadow: rgb(15 23 42 / 0.08);
+  --well-shadow: inset 0 1px 2px rgb(15 23 42 / 0.07), inset 0 1px 0 rgb(255 255 255 / 0.6);
+
+  /* EvalBar & EvalGraph semantic surfaces (decoupled from brand --gold). */
+  --eval-tb-bg: #eab354;
+  --eval-tb-fg: #080b12;
+  --eval-white-bg: #ffffff;
+  --eval-white-fg: #0f172a;
+  --eval-draw-bg: #57657a;
+  --eval-draw-fg: #ffffff;
+  --eval-black-bg: #141b29;
+  --eval-black-fg: #f1f5f9;
+  --eval-midline: rgb(139 85 0 / 0.55);
+  --eval-graph-bg: #d7dde5;
+  --eval-graph-white: #ffffff;
+  --eval-graph-stroke: #03694b;
+  --scrollbar-thumb: rgb(15 23 42 / 0.2);
+  --scrollbar-thumb-hover: rgb(3 105 75 / 0.45);
+
+  /* 11 semantic move-classification tokens (decoupled from brand emerald/gold). */
+  --class-brilliant-bg: #22d3ee;
+  --class-brilliant-fg: #042f2e;
+  --class-brilliant-ring: #0e7490;
+  --class-great-bg: #4f46e5;
+  --class-great-fg: #ffffff;
+  --class-great-ring: #3730a3;
+  --class-best-bg: #10b981;
+  --class-best-fg: #022c22;
+  --class-best-ring: #047857;
+  --class-excellent-bg: #38bdf8;
+  --class-excellent-fg: #082f49;
+  --class-excellent-ring: #0369a1;
+  --class-good-bg: #a3e635;
+  --class-good-fg: #1a2600;
+  --class-good-ring: #4d7c0f;
+  --class-book-bg: #d4a373;
+  --class-book-fg: #2a1a0c;
+  --class-book-ring: #8b5500;
+  --class-forced-bg: #94a3b8;
+  --class-forced-fg: #0f172a;
+  --class-forced-ring: #475569;
+  --class-inaccuracy-bg: #fbbf24;
+  --class-inaccuracy-fg: #2a1a00;
+  --class-inaccuracy-ring: #92400e;
+  --class-mistake-bg: #fb923c;
+  --class-mistake-fg: #2c1300;
+  --class-mistake-ring: #c2410c;
+  --class-miss-bg: #e11d48;
+  --class-miss-fg: #ffffff;
+  --class-miss-ring: #9f1239;
+  --class-blunder-bg: #dc2626;
+  --class-blunder-fg: #ffffff;
+  --class-blunder-ring: #991b1b;
 }
 
 .dark {
-  --background: #0b0f17;
+  --background: #080b12;
   --foreground: #e8edf5;
-  --card: rgb(255 255 255 / 0.04);
-  --card-solid: #121826;
+  --card: rgb(15 20 32 / 0.82);
+  --card-solid: #0f1420;
+  --surface-well: #06090f;
   --card-foreground: var(--foreground);
-  --popover: #121826;
+  --popover: #0f1420;
   --popover-foreground: var(--foreground);
-  --primary: #34d399;
+  --primary: #2dd49f;
   --primary-foreground: #04120c;
   --secondary: rgb(255 255 255 / 0.06);
   --secondary-foreground: var(--foreground);
   --muted: rgb(255 255 255 / 0.06);
   --muted-foreground: #94a3b8;
-  --accent: rgb(52 211 153 / 0.12);
+  --accent: rgb(45 212 159 / 0.13);
   --accent-foreground: var(--foreground);
-  --gold: #f5c56b;
+  --gold: #eab354;
+  --warning: #fb923c;
   --destructive: #f87171;
-  --border: rgb(255 255 255 / 0.08);
-  --input: rgb(255 255 255 / 0.12);
-  --ring: #34d399;
-  --glow-emerald: rgb(52 211 153 / 0.14);
-  --glow-gold: rgb(245 197 107 / 0.1);
+  --border: rgb(255 255 255 / 0.09);
+  --input: rgb(255 255 255 / 0.14);
+  --ring: #2dd49f;
+  --glow-emerald: rgb(45 212 159 / 0.12);
+  --glow-gold: rgb(234 179 84 / 0.09);
+  --panel-highlight: rgb(255 255 255 / 0.065);
+  --panel-shadow: rgb(0 0 0 / 0.5);
+  --well-shadow: inset 0 1px 0 rgb(255 255 255 / 0.03), inset 0 2px 6px rgb(0 0 0 / 0.45);
+
+  --eval-tb-bg: #eab354;
+  --eval-tb-fg: #080b12;
+  --eval-white-bg: #f1f5f9;
+  --eval-white-fg: #080b12;
+  --eval-draw-bg: #57657a;
+  --eval-draw-fg: #ffffff;
+  --eval-black-bg: #141b29;
+  --eval-black-fg: #f1f5f9;
+  --eval-midline: rgb(234 179 84 / 0.65);
+  --eval-graph-bg: #0c101b;
+  --eval-graph-white: #e8edf5;
+  --eval-graph-stroke: #2dd49f;
+  --scrollbar-thumb: rgb(45 212 159 / 0.2);
+  --scrollbar-thumb-hover: rgb(45 212 159 / 0.45);
+
+  --class-brilliant-ring: rgb(255 255 255 / 0.22);
+  --class-great-ring: #818cf8;
+  --class-best-ring: rgb(255 255 255 / 0.22);
+  --class-excellent-ring: rgb(255 255 255 / 0.22);
+  --class-good-ring: rgb(255 255 255 / 0.22);
+  --class-book-ring: rgb(255 255 255 / 0.22);
+  --class-forced-ring: rgb(255 255 255 / 0.22);
+  --class-inaccuracy-ring: rgb(255 255 255 / 0.22);
+  --class-mistake-ring: rgb(255 255 255 / 0.22);
+  --class-miss-ring: #fb7185;
+  --class-blunder-ring: #f87171;
 }
 
 @theme inline {
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-display: var(--font-instrument-serif);
+  --font-sans: var(--font-jakarta-sans);
+  --font-mono: var(--font-jetbrains-mono);
+  --font-display: var(--font-fraunces);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -71,6 +159,7 @@
   --color-foreground: var(--foreground);
   --color-card: var(--card);
   --color-card-solid: var(--card-solid);
+  --color-surface-well: var(--surface-well);
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
@@ -83,6 +172,7 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-gold: var(--gold);
+  --color-warning: var(--warning);
   --color-destructive: var(--destructive);
   --color-border: var(--border);
   --color-input: var(--input);
@@ -92,6 +182,29 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+  }
+  @supports not selector(::-webkit-scrollbar) {
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: var(--scrollbar-thumb) transparent;
+    }
+  }
+  *::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  *::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb);
+    border-radius: 9999px;
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: var(--scrollbar-thumb-hover);
+  }
+  *::-webkit-scrollbar-corner {
+    background: transparent;
   }
   /* Tailwind v4 leaves buttons with the default arrow; everything clickable shows a hand. */
   button:not(:disabled),
@@ -109,30 +222,43 @@
   :disabled {
     cursor: not-allowed;
   }
-  html {
-    scroll-behavior: smooth;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    html {
-      scroll-behavior: auto;
-    }
-  }
   body {
     @apply bg-background text-foreground antialiased;
     /* Safety net: nothing may cause sideways scrolling on phones (clip keeps the sticky header working). */
     overflow-x: clip;
-    /* Soft emerald + gold glows behind everything. */
+    /* Soft emerald + gold glows behind everything (static layer, no fixed-attachment mobile scroll repaints). */
     background-image:
       radial-gradient(60rem 40rem at -10% -10%, var(--glow-emerald), transparent 60%),
       radial-gradient(50rem 35rem at 110% 110%, var(--glow-gold), transparent 60%);
-    background-attachment: fixed;
+    background-repeat: no-repeat;
   }
 }
 
 @layer components {
-  /* Frosted-glass surface used by cards and panels. */
+  /* Tier 1 — Recessed telemetry well for move trees, clocks, and structured metrics. */
+  .surface-well {
+    @apply border border-border/80 bg-surface-well;
+    box-shadow: var(--well-shadow);
+  }
+  /* Tier 2 — Solid architectural surface with 1px top specular highlight for panels & drawers. */
+  .panel-solid {
+    @apply border border-border bg-card-solid;
+    box-shadow:
+      inset 0 1px 0 var(--panel-highlight),
+      0 12px 32px -24px var(--panel-shadow);
+  }
+  /* Tier 3 — Focal translucent glass reserved for signature boards, command surfaces, and highlights. */
   .glass {
-    @apply border bg-card backdrop-blur-xl;
+    @apply border border-border bg-card backdrop-blur-xl;
+    box-shadow:
+      inset 0 1px 0 var(--panel-highlight),
+      0 18px 42px -24px var(--panel-shadow);
+  }
+  /* Crisp tabular numerals for engine scores, accuracy ratings, timers, and KPIs. */
+  .kpi-num {
+    @apply font-mono font-semibold tracking-tight;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
   }
   .text-gradient {
     background: linear-gradient(100deg, var(--primary), var(--gold));

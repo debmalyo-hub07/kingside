@@ -2,6 +2,7 @@
 
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { MotionProvider } from "@/components/motion-provider";
 import { AnalysisView } from "@/features/analysis/analysis-view";
 import { PageMessages } from "@/i18n/client-messages";
 
@@ -23,7 +24,15 @@ export default async function EndgamesPage({
   return (
     <PageMessages ns={["analysis", "explorer", "tablebase", "share"]}>
       <h1 className="sr-only">{(await getTranslations("meta.endgames"))("title")}</h1>
-      <AnalysisView initialFen={first?.slice(0, 100) ?? START} initialPanel="explorer" />
+      <MotionProvider>
+        <AnalysisView
+          initialFen={first?.slice(0, 100)}
+          defaultFen={START}
+          initialPanel="explorer"
+          persistSession
+          sessionKey="endgames"
+        />
+      </MotionProvider>
     </PageMessages>
   );
 }

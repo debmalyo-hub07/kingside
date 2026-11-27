@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
+import { Fraunces, JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
 import type * as React from "react";
@@ -14,13 +14,16 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { clientMessages, SHARED } from "@/i18n/client-messages";
 import "./globals.css";
 
-const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
-// Mono (move lists) is not preloaded: no page needs it for the first paint.
-const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"], preload: false });
-const instrumentSerif = Instrument_Serif({
-  variable: "--font-instrument-serif",
+const jakartaSans = Plus_Jakarta_Sans({ variable: "--font-jakarta-sans", subsets: ["latin"] });
+// Mono (move lists & numeric telemetry) is not preloaded to keep initial landing paint lean.
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
   subsets: ["latin"],
-  weight: "400",
+  preload: false,
+});
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
+  subsets: ["latin"],
   style: ["normal", "italic"],
 });
 
@@ -40,8 +43,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f6f8fb" },
-    { media: "(prefers-color-scheme: dark)", color: "#0b0f17" },
+    { media: "(prefers-color-scheme: light)", color: "#f5f6f2" },
+    { media: "(prefers-color-scheme: dark)", color: "#080b12" },
   ],
 };
 
@@ -50,7 +53,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={locale} suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${instrumentSerif.variable} flex min-h-dvh flex-col font-sans`}
+        className={`${jakartaSans.variable} ${jetbrainsMono.variable} ${fraunces.variable} flex min-h-dvh flex-col font-sans`}
       >
         <SettingsHydrator />
         <PwaRegister />

@@ -3,6 +3,7 @@
 
 import type * as React from "react";
 import { useEffect } from "react";
+import { cn } from "@/lib/utils";
 
 // The first page load renders without the transition so content is visible before JavaScript runs
 // (good LCP); later client-side navigations fade in (CSS only, honours reduced motion).
@@ -16,11 +17,11 @@ export default function Template({ children }: { children: React.ReactNode }) {
   }, []);
   return (
     <div
-      className={
-        animate
-          ? "animate-in fade-in slide-in-from-bottom-2 duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:animate-none"
-          : undefined
-      }
+      className={cn(
+        "flex min-h-0 flex-1 flex-col",
+        animate &&
+          "animate-in fade-in slide-in-from-bottom-2 duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:animate-none",
+      )}
     >
       {children}
     </div>

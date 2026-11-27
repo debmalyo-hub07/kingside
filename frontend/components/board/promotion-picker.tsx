@@ -54,7 +54,6 @@ export function PromotionPicker({
               alt=""
               width={72}
               height={72}
-              loading="eager"
               unoptimized
               className="size-full"
             />

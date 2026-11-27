@@ -41,7 +41,7 @@ export function OpeningLabel() {
 
   if (!opening) return null;
   return (
-    <p className="flex items-center gap-2 border-b px-3 py-2 text-sm">
+    <p className="flex shrink-0 items-center gap-2 border-b px-3 py-1.5 text-xs md:py-2 md:text-sm">
       <BookOpen className="size-4 shrink-0 text-gold" aria-hidden />
       <span className="font-mono text-xs text-muted-foreground">{opening.eco}</span>
       <span className="truncate" title={opening.name}>

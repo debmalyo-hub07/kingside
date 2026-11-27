@@ -13,6 +13,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { NAV_GROUPS, type NavItem, SETTINGS_ITEM } from "@/lib/site-nav";
 import { cn } from "@/lib/utils";
+import { isMobileBoardWorkspace, isWideWorkspace } from "@/lib/workspace-routes";
 
 // Loaded on first use: keeps the search dialog out of every page's first JavaScript.
 const CommandPalette = dynamic(
@@ -93,10 +94,18 @@ export function SiteHeader() {
   }, []);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [menu, setMenu] = useState("");
+  const mobileWorkspace = isMobileBoardWorkspace(pathname);
+  const wideWorkspace = isWideWorkspace(pathname);
 
   return (
-    <header className="sticky top-0 z-30 border-b bg-background/70 backdrop-blur-xl">
-      <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4">
+    <header className="sticky top-0 z-30 shrink-0 border-b bg-background/75 backdrop-blur-xl">
+      <div
+        className={cn(
+          "mx-auto flex items-center gap-3 px-3 sm:gap-4 md:h-16 md:px-4",
+          wideWorkspace ? "max-w-[1600px]" : "max-w-7xl",
+          mobileWorkspace ? "h-11" : "h-16",
+        )}
+      >
         <Logo />
 
         <NavigationMenu.Root

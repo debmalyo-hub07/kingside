@@ -30,7 +30,11 @@ export function SharedGameLoader({ id, embed = false }: { id: string; embed?: bo
   if (state.status === "ok") return <GameViewer game={state.game} embed={embed} />;
   return (
     <div
-      className={embed ? "grid h-dvh place-items-center p-4 text-sm" : "grid min-h-[50vh] place-items-center"}
+      className={
+        embed
+          ? "grid h-dvh place-items-center p-4 text-sm"
+          : "grid min-h-[50vh] place-items-center max-md:min-h-0 max-md:flex-1"
+      }
     >
       {state.status === "loading" ? (
         <p className="flex items-center gap-2 text-muted-foreground">

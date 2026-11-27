@@ -2,6 +2,7 @@
 
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { MotionProvider } from "@/components/motion-provider";
 import { DailyPuzzle } from "@/features/puzzles/daily-puzzle";
 import { PageMessages } from "@/i18n/client-messages";
 
@@ -13,7 +14,9 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function DailyPuzzlePage() {
   return (
     <PageMessages ns={["puzzles"]}>
-      <DailyPuzzle />
+      <MotionProvider>
+        <DailyPuzzle />
+      </MotionProvider>
     </PageMessages>
   );
 }

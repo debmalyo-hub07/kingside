@@ -29,10 +29,15 @@ export {
   type MoveNode,
   mainlineFrom,
   nodeAtPath,
+  nodeCommentText,
   nodesAlongPath,
   positionFromFen,
+  promoteToMainline,
   promoteVariation,
+  setNodeComment,
   type TreePath,
+  threatFen,
+  toggleNodeNag,
   treeFromPgn,
   treeToPgn,
   uciLineToSan,
@@ -42,6 +47,7 @@ export { PERFORMANCE_KNOTS, PERFORMANCE_KNOTS_BY_TIME, PERFORMANCE_SAMPLE_SIZE }
 export {
   isLegalPv,
   isTablebasePosition,
+  isUnrelatedGameFen,
   mainlineLength,
   normalizeFen,
   pgnFromUciMoves,
@@ -57,6 +63,8 @@ export {
 } from "./practice";
 export {
   anchoredPerformance,
+  type ClassifyMoveInput,
+  classifyMove,
   criticalPositions,
   detectPhases,
   type EngineLine,

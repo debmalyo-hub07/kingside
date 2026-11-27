@@ -3,7 +3,7 @@
 
 import { ArrowRight, ClipboardPaste, Loader2, Search, Upload } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { apiGet, type ImportedGame } from "@/lib/api";
 import { useSettings } from "@/lib/settings-store";
@@ -11,11 +11,9 @@ import { useApiErrorText } from "@/lib/use-api-error";
 import { usePositionErrorText } from "@/lib/use-position-error";
 import { cn } from "@/lib/utils";
 import { formatNodes } from "./review-progress";
-import { DEPTH_PRESETS, useReview } from "./review-store";
+import { DEPTH_PRESETS, type ImportSite, useReview } from "./review-store";
 
-type Tab = "lichess" | "chesscom" | "pgn";
-
-const TABS: Tab[] = ["lichess", "chesscom", "pgn"];
+const TABS: ImportSite[] = ["lichess", "chesscom", "pgn"];
 
 type Outcome = "draw" | "unfinished" | "won" | "lost";
 
@@ -44,10 +42,16 @@ function GameRow({ game, username, onPick }: { game: ImportedGame; username: str
       >
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium">
-            <span className="mr-1 inline-block size-2.5 rounded-full border border-neutral-400 bg-white align-middle" />
+            <span
+              aria-hidden
+              className="mr-1 inline-block size-2.5 rounded-full border border-border bg-[var(--eval-white-bg)] align-middle"
+            />
             {game.white.name} <span className="text-muted-foreground">({game.white.rating ?? "?"})</span>
             <span className="mx-2 text-muted-foreground">{t("vs")}</span>
-            <span className="mr-1 inline-block size-2.5 rounded-full border border-neutral-500 bg-neutral-900 align-middle" />
+            <span
+              aria-hidden
+              className="mr-1 inline-block size-2.5 rounded-full border border-border bg-[var(--eval-black-bg)] align-middle"
+            />
             {game.black.name} <span className="text-muted-foreground">({game.black.rating ?? "?"})</span>
           </p>
           <p className="truncate text-xs text-muted-foreground">
@@ -67,55 +71,73 @@ export function ReviewImport() {
   const tr = useTranslations("review");
   const apiError = useApiErrorText();
   const positionError = usePositionErrorText();
-  const { preset, setPreset, start, error: storeError } = useReview();
-  const [tab, setTab] = useState<Tab>("lichess");
-  const [username, setUsername] = useState("");
-  const [searched, setSearched] = useState("");
-  const [games, setGames] = useState<ImportedGame[] | null>(null);
+  const myNames = useSettings((s) => s.myNames);
+  const {
+    preset,
+    setPreset,
+    start,
+    error: storeError,
+    importSite: tab,
+    importUser: username,
+    importSearched: searched,
+    fetchedGames: games,
+    pendingLookup,
+    consumePendingLookup,
+    setImportState,
+  } = useReview();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pgn, setPgn] = useState("");
+  const prefilledRef = useRef(false);
 
-  const search = async (e?: React.FormEvent, source: Tab = tab, typed: string = username) => {
-    e?.preventDefault();
-    const name = typed.trim();
-    if (!/^[A-Za-z0-9_-]{2,30}$/.test(name)) {
-      setError(t("badUsername"));
-      return;
-    }
-    setLoading(true);
-    setError(null);
-    setGames(null);
-    try {
-      const { games } = await apiGet<{ games: ImportedGame[] }>(
-        `/api/import/${source}/${encodeURIComponent(name)}?max=25`,
-      );
-      setGames(games);
-      setSearched(name);
-      // Remember the name: its side of every game is "you" in insights and drills.
-      const known = useSettings.getState().myNames;
-      if (!known.some((n) => n.toLowerCase() === name.toLowerCase())) {
-        useSettings.getState().update({ myNames: [name, ...known].slice(0, 5) });
+  const search = useCallback(
+    async (e?: React.FormEvent, source: ImportSite = tab, typed: string = username) => {
+      e?.preventDefault();
+      if (source === "pgn") return;
+      const name = typed.trim();
+      if (!/^[A-Za-z0-9_-]{2,30}$/.test(name)) {
+        setError(t("badUsername"));
+        return;
       }
-    } catch (err) {
-      setError(apiError(err));
-    } finally {
-      setLoading(false);
-    }
-  };
+      setLoading(true);
+      setError(null);
+      setImportState({ importSite: source, importUser: name, fetchedGames: null });
+      try {
+        const { games: loaded } = await apiGet<{ games: ImportedGame[] }>(
+          `/api/import/${source}/${encodeURIComponent(name)}?max=25`,
+        );
+        setImportState({ importSite: source, importUser: name, importSearched: name, fetchedGames: loaded });
+        // Remember the name: its side of every game is "you" in insights and drills.
+        const known = useSettings.getState().myNames;
+        if (!known.some((n) => n.toLowerCase() === name.toLowerCase())) {
+          useSettings.getState().update({ myNames: [name, ...known].slice(0, 5) });
+        }
+      } catch (err) {
+        setError(apiError(err));
+      } finally {
+        setLoading(false);
+      }
+    },
+    [tab, username, t, apiError, setImportState],
+  );
 
-  // Arriving from the home page quick start: /review?site=chesscom&user=name searches right away.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: run once on arrival
+  // Execute pending lookup requested via /review?site=...&user=...
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const site = params.get("site");
-    const user = params.get("user");
-    if ((site === "lichess" || site === "chesscom") && user) {
-      setTab(site);
-      setUsername(user);
-      void search(undefined, site, user);
+    if (!pendingLookup) return;
+    const req = consumePendingLookup();
+    if (req) void search(undefined, req.site, req.user);
+  }, [pendingLookup, consumePendingLookup, search]);
+
+  // Pre-fill the most recent remembered handle when opening /review fresh without a typed handle.
+  useEffect(() => {
+    if (prefilledRef.current) return;
+    if (pendingLookup || username || myNames.length === 0 || tab === "pgn") return;
+    const first = myNames[0];
+    if (first) {
+      prefilledRef.current = true;
+      setImportState({ importUser: first });
     }
-  }, []);
+  }, [pendingLookup, username, myNames, tab, setImportState]);
 
   const begin = (text: string, meta?: Parameters<typeof start>[1]) => {
     try {
@@ -127,7 +149,7 @@ export function ReviewImport() {
   };
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
+    <div className="mx-auto w-full max-w-3xl space-y-6 max-md:min-h-0 max-md:flex-1 max-md:overflow-y-auto max-md:pb-6">
       <div className="text-center">
         <h1 className="font-display text-5xl tracking-tight">{t("title")}</h1>
         <p className="mt-3 text-muted-foreground">{t("subtitle")}</p>
@@ -142,8 +164,7 @@ export function ReviewImport() {
               role="tab"
               aria-selected={tab === id}
               onClick={() => {
-                setTab(id);
-                setGames(null);
+                setImportState({ importSite: id, fetchedGames: null, importSearched: "" });
                 setError(null);
               }}
               className={cn(
@@ -203,7 +224,10 @@ export function ReviewImport() {
           <form onSubmit={search} className="flex gap-2">
             <input
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) => {
+                prefilledRef.current = true;
+                setImportState({ importUser: e.target.value });
+              }}
               placeholder={t(tab === "lichess" ? "usernameLichess" : "usernameChesscom")}
               aria-label={t("username")}
               autoComplete="off"
@@ -214,6 +238,36 @@ export function ReviewImport() {
               {loading ? <Loader2 className="animate-spin" /> : <Search />} {t("find")}
             </Button>
           </form>
+        )}
+
+        {tab !== "pgn" && myNames.length > 0 && (
+          <div className="mt-3 flex flex-wrap items-center gap-1.5 text-xs">
+            <span className="text-muted-foreground">{t("recentUsernames")}</span>
+            {myNames.map((name) => {
+              const active = username.trim().toLowerCase() === name.toLowerCase();
+              return (
+                <button
+                  key={name}
+                  type="button"
+                  onClick={() => {
+                    prefilledRef.current = true;
+                    setImportState({ importUser: name });
+                    void search(undefined, tab, name);
+                  }}
+                  aria-label={t("useUsername", { name })}
+                  aria-pressed={active}
+                  className={cn(
+                    "rounded-full border px-2.5 py-1 font-medium transition",
+                    active
+                      ? "border-primary bg-primary/15 text-foreground"
+                      : "bg-secondary/60 text-muted-foreground hover:border-primary/50 hover:text-foreground",
+                  )}
+                >
+                  {name}
+                </button>
+              );
+            })}
+          </div>
         )}
 
         <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">

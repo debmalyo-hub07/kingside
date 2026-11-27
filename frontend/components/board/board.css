@@ -1,6 +1,10 @@
 /* SPDX-License-Identifier: AGPL-3.0-or-later */
 /* Kingside board skin for chessground. Colors come from CSS variables set by <ChessBoard>. */
 
+.ks-board {
+  container-type: inline-size;
+}
+
 .ks-board cg-board {
   background-color: var(--board-light);
   background-image: repeating-conic-gradient(var(--board-dark) 0 25%, var(--board-light) 0 50%);

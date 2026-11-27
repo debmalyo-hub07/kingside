@@ -3,6 +3,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
+import { MotionProvider } from "@/components/motion-provider";
 import { ALL_PRACTICE, practiceById } from "@/features/practice/positions";
 import { PracticeSession } from "@/features/practice/practice-session";
 import { PageMessages } from "@/i18n/client-messages";
@@ -24,7 +25,9 @@ export default async function PracticePositionPage({ params }: { params: Promise
   if (!position) notFound();
   return (
     <PageMessages ns={["practice"]}>
-      <PracticeSession key={position.id} position={position} />
+      <MotionProvider>
+        <PracticeSession key={position.id} position={position} />
+      </MotionProvider>
     </PageMessages>
   );
 }

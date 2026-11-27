@@ -60,7 +60,8 @@ The Stockfish license text ships with the engine at `frontend/public/engine/COPY
 
 | Font | License | Source |
 |---|---|---|
-| Geist, Geist Mono (via next/font/google) | SIL OFL 1.1 | https://github.com/vercel/geist-font |
-| Instrument Serif (via next/font/google) | SIL OFL 1.1 | https://github.com/Instrument/instrument-serif |
+| Fraunces (via next/font/google) | SIL OFL 1.1 | https://github.com/undercasetype/Fraunces |
+| Plus Jakarta Sans (via next/font/google) | SIL OFL 1.1 | https://github.com/tokotype/PlusJakartaSans |
+| JetBrains Mono (via next/font/google) | SIL OFL 1.1 | https://github.com/JetBrains/JetBrainsMono |
 
 UI components in `frontend/components/ui` follow shadcn/ui patterns (MIT).

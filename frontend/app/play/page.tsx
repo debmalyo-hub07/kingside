@@ -11,11 +11,17 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("title"), description: t("description") };
 }
 
-export default function PlayPage() {
+export default async function PlayPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ fen?: string | string[] }>;
+}) {
+  const { fen } = await searchParams;
+  const first = (Array.isArray(fen) ? fen[0] : fen)?.slice(0, 100);
   return (
     <PageMessages ns={["play", "share"]}>
       <MotionProvider>
-        <PlayView />
+        <PlayView initialFen={first} />
       </MotionProvider>
     </PageMessages>
   );
