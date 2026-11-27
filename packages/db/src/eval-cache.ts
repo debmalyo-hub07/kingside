@@ -2,6 +2,7 @@
 // Shared MongoDB evaluation cache for Kingside's own Stockfish 19 evaluations ONLY.
 // Strictly rejects third-party Lichess cloud-eval tags per THIRD_PARTY_NOTICES.md.
 
+import mongoose from "mongoose";
 import { EvalCache } from "./models";
 
 /** Only Kingside's own Stockfish 19 engine identifiers may be persisted in MongoDB EvalCache. */
@@ -115,7 +116,7 @@ export async function getEvalCacheBatch(
   if (valid.length === 0) return {};
 
   const ids = [...new Set(valid.map((q) => q.key))];
-  const docs = await EvalCache.find({ _id: { $in: ids } }).lean<RawEvalDoc[]>();
+  const docs = await EvalCache.find({ _id: mongoose.trusted({ $in: ids }) }).lean<RawEvalDoc[]>();
   const byId = new Map<string, RawEvalDoc>(docs.map((d) => [d._id, d]));
 
   const out: Record<string, EvalCacheEntry> = {};
@@ -159,7 +160,7 @@ export async function putEvalCacheBatch(entries: readonly EvalCacheWrite[]): Pro
   if (deduped.size === 0) return 0;
 
   const existing = await EvalCache.find(
-    { _id: { $in: [...deduped.keys()] } },
+    { _id: mongoose.trusted({ $in: [...deduped.keys()] }) },
     { _id: 1, depth: 1, multipv: 1 },
   ).lean<{ _id: string; depth: number; multipv: number }[]>();
   const existingById = new Map(existing.map((d) => [d._id, d]));
