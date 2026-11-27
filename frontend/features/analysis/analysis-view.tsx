@@ -86,6 +86,7 @@ import { usePrefersReducedMotion } from "@/lib/use-in-view";
 import { useMediaQuery } from "@/lib/use-media-query";
 import { usePositionErrorText } from "@/lib/use-position-error";
 import { cn } from "@/lib/utils";
+import { ANALYSIS_HOLD_MS, type HeldEval, resolveAnalysisEvalBar } from "./analysis-eval";
 import { type AnalysisWorkspace, useAnalysis, useCurrentNode } from "./analysis-store";
 import { buildCandidateArrowShapes } from "./candidate-arrows";
 import { EnginePanel } from "./engine-panel";
@@ -408,6 +409,45 @@ export function AnalysisView({
   const tablebase = useTablebase(node.fen, inTablebase);
   const tbOutcome = tablebase.status === "ok" ? tablebaseWhiteOutcome(tablebase.data, node.fen) : null;
   const snapshot = engine.snapshot?.fen === node.fen ? engine.snapshot : null;
+
+  const heldEvalTreeRef = useRef(store.tree);
+  const heldEvalRef = useRef<HeldEval | null>(null);
+  if (heldEvalTreeRef.current !== store.tree) {
+    heldEvalTreeRef.current = store.tree;
+    heldEvalRef.current = null;
+  }
+  const [holdExpiredForFen, setHoldExpiredForFen] = useState<string | null>(null);
+  const holdExpired = holdExpiredForFen === node.fen;
+
+  const evalBarTarget = resolveAnalysisEvalBar({
+    gameOverWhiteWin,
+    snapshot,
+    cachedEntry: evalMap[epdOf(node.fen)],
+    reviewWhiteWin: store.reviewWhiteWin[node.id],
+    engineEnabled,
+    heldEval: heldEvalRef.current,
+    holdExpired,
+  });
+  if (evalBarTarget.settled) {
+    heldEvalRef.current = { score: evalBarTarget.score, whiteWin: evalBarTarget.whiteWin };
+  }
+
+  useEffect(() => {
+    if (evalBarTarget.settled || !engineEnabled) return;
+    const timer = setTimeout(() => setHoldExpiredForFen(node.fen), ANALYSIS_HOLD_MS);
+    return () => clearTimeout(timer);
+  }, [node.fen, evalBarTarget.settled, engineEnabled]);
+
+  const prevPathRef = useRef<string[]>(store.path);
+  const isAdjacentStep =
+    (store.path.length === prevPathRef.current.length + 1 &&
+      prevPathRef.current.every((id, i) => store.path[i] === id)) ||
+    (prevPathRef.current.length === store.path.length + 1 &&
+      store.path.every((id, i) => prevPathRef.current[i] === id));
+  const isBoardJump = store.path.join("/") !== prevPathRef.current.join("/") && !isAdjacentStep;
+  useEffect(() => {
+    prevPathRef.current = store.path;
+  }, [store.path]);
 
   // Record live engine lines into `evalMap` so EvalGraph and live move classifications stay in sync.
   useEffect(() => {
@@ -939,8 +979,8 @@ export function AnalysisView({
         <div className={cn("min-w-0 shrink-0 space-y-1.5 md:space-y-2", focusMode && "w-full")}>
           <div className="flex min-w-0 justify-center gap-1.5 md:gap-2">
             <EvalBar
-              score={snapshot?.lines[0]?.score}
-              whiteWin={gameOverWhiteWin}
+              score={evalBarTarget.score}
+              whiteWin={evalBarTarget.whiteWin}
               orientation={store.orientation}
               badge={tbOutcome ? "TB" : undefined}
               badgeTitle={tbOutcome ? t(`tb.${tbOutcome}`) : undefined}
@@ -974,6 +1014,7 @@ export function AnalysisView({
                   check={boardCheck}
                   dests={promotion ? new Map() : dests}
                   autoShapes={autoShapes}
+                  animationMs={isBoardJump ? 0 : undefined}
                   interactionMode={promotion ? "play" : boardMode}
                   drawBrush={drawBrush}
                   clearShapesSignal={clearShapesSignal}

@@ -493,6 +493,12 @@ export function ReviewReport() {
     ];
   }, [review, settings.notation, classLabel]);
 
+  const prevPlyRef = useRef(ply);
+  const isBoardJump = Math.abs(ply - prevPlyRef.current) > 1 && !preview && !retry;
+  useEffect(() => {
+    prevPlyRef.current = ply;
+  }, [ply]);
+
   if (!review || !meta) return null;
 
   const retrying = retry !== null;
@@ -864,6 +870,7 @@ export function ReviewReport() {
                   lastMove={toKeys(lastUci)}
                   check={boardPos.isCheck()}
                   autoShapes={shapes}
+                  animationMs={isBoardJump ? 0 : undefined}
                   interactionMode={retrying ? "play" : boardMode}
                   onSwipe={(dir) => seek(dir === "next" ? ply + 1 : ply - 1)}
                   onReady={(a) => {

@@ -1,20 +1,42 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 "use client";
 
-import { positionFromFen } from "@kingside/chess-core";
+import { positionFromFen, winPercentFromScore } from "@kingside/chess-core";
 import type { Key } from "chessground/types";
-import { Activity, Cpu, Loader2, X } from "lucide-react";
+import {
+  Activity,
+  ChevronFirst,
+  ChevronLast,
+  ChevronLeft,
+  ChevronRight,
+  Cpu,
+  FlipVertical2,
+  Loader2,
+  X,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { ChessBoard } from "@/components/board/chess-board";
-import { EvalBar } from "@/components/eval-bar";
+import { EvalBar, formatScore } from "@/components/eval-bar";
+import { EvalGraph, type GraphPointMeta } from "@/components/eval-graph";
 import { Button } from "@/components/ui/button";
 import { ENGINE_NAME } from "@/engine/stockfish-engine";
+import { colorOfPly, formatSan } from "@/lib/notation";
+import { useSettings } from "@/lib/settings-store";
 import { cn } from "@/lib/utils";
 import { DEPTH_PRESETS, type PlayerInfo, useReview } from "./review-store";
 import { runReview } from "./run-review";
 
 const START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+
+function isTyping(target: EventTarget | null): boolean {
+  return (
+    target instanceof HTMLElement &&
+    (target.isContentEditable ||
+      /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName) ||
+      target.closest('[role="dialog"], [role="alertdialog"], [role="listbox"], [role="menu"]') !== null)
+  );
+}
 
 /** 400000 → "400k", 1500000 → "1.5M". */
 export function formatNodes(n: number): string {
@@ -41,8 +63,24 @@ function ScanningPlayerBar({ player, color }: { player: PlayerInfo; color: "whit
 
 export function ReviewProgress() {
   const t = useTranslations("review.progress");
-  const { fens, moves, positions, progress, activeIndex, recheck, download, preset, meta, reset, fail } =
-    useReview();
+  const tr = useTranslations("review.report");
+  const notation = useSettings((s) => s.notation);
+  const {
+    fens,
+    moves,
+    positions,
+    progress,
+    ply,
+    orientation: storeOrientation,
+    goTo,
+    setOrientation,
+    recheck,
+    download,
+    preset,
+    meta,
+    reset,
+    fail,
+  } = useReview();
   const settings = DEPTH_PRESETS.find((p) => p.id === preset) ?? DEPTH_PRESETS[1];
   const { nodes, recheckNodes } = settings;
 
@@ -57,6 +95,7 @@ export function ReviewProgress() {
   }, [nodes, recheckNodes, fail]);
 
   const total = fens.length;
+  const maxPly = Math.max(0, total - 1);
   // First pass = 80 % of the bar, the deeper second look = the rest.
   const firstPct = total ? Math.min(80, Math.round((progress / total) * 80)) : 0;
   const secondPct =
@@ -65,15 +104,44 @@ export function ReviewProgress() {
   const rechecking = recheck.total > 0 && progress >= total;
   const downloading = download !== null && download < 1;
 
-  const orientation = meta?.me ?? "white";
+  // Board & EvalBar stay steady on the user-selected ply, decoupled from background Pass 1/Pass 2 scan order.
+  const orientation = storeOrientation ?? meta?.me ?? "white";
   const topColor = orientation === "white" ? "black" : "white";
-  const previewIndex =
-    activeIndex !== null
-      ? Math.max(0, Math.min(activeIndex, Math.max(0, fens.length - 1)))
-      : Math.min(progress, Math.max(0, fens.length - 1));
+  const previewIndex = Math.max(0, Math.min(ply, maxPly));
+  const prevPreviewIndexRef = useRef(previewIndex);
+  const isNonAdjacentJump = Math.abs(previewIndex - prevPreviewIndexRef.current) > 1;
+  useEffect(() => {
+    prevPreviewIndexRef.current = previewIndex;
+  }, [previewIndex]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.defaultPrevented || isTyping(e.target) || e.ctrlKey || e.metaKey || e.altKey) return;
+      const s = useReview.getState();
+      const max = Math.max(0, s.fens.length - 1);
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        s.goTo(s.ply - 1);
+      } else if (e.key === "ArrowRight") {
+        e.preventDefault();
+        s.goTo(s.ply + 1);
+      } else if (e.key === "ArrowUp" || e.key === "Home") {
+        e.preventDefault();
+        s.goTo(0);
+      } else if (e.key === "ArrowDown" || e.key === "End") {
+        e.preventDefault();
+        s.goTo(max);
+      } else if (e.key === "f" || e.key === "F") {
+        e.preventDefault();
+        s.setOrientation(s.orientation === "white" ? "black" : "white");
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
   const previewFen = fens[previewIndex] ?? START_FEN;
-  const previewScore =
-    positions[previewIndex]?.lines[0]?.score ?? positions[Math.max(0, progress - 1)]?.lines[0]?.score;
+  const previewScore = positions[previewIndex]?.lines[0]?.score;
   const lastUci = previewIndex > 0 ? moves[previewIndex - 1]?.uci : undefined;
   const lastMove: [Key, Key] | undefined = lastUci
     ? [lastUci.slice(0, 2) as Key, lastUci.slice(2, 4) as Key]
@@ -94,10 +162,46 @@ export function ReviewProgress() {
     // Fallback to defaults for malformed test FENs
   }
 
+  const liveGraph = useMemo(() => {
+    if (fens.length < 2) return null;
+    const whiteWin: number[] = [];
+    const evaluated: boolean[] = [];
+    const graphMeta: (GraphPointMeta | undefined)[] = [];
+    for (let i = 0; i < fens.length; i++) {
+      const score = positions[i]?.lines[0]?.score;
+      let terminalWin: number | undefined;
+      if (!score) {
+        try {
+          const p = positionFromFen(fens[i] as string);
+          if (p.isCheckmate()) terminalWin = p.turn === "white" ? 0 : 100;
+          else if (p.isStalemate() || p.isInsufficientMaterial()) terminalWin = 50;
+        } catch {
+          // ignore malformed FENs
+        }
+      }
+      const hasEval = Boolean(score) || terminalWin !== undefined;
+      evaluated.push(hasEval);
+      whiteWin.push(score ? winPercentFromScore(score) : (terminalWin ?? 50));
+      const move = i > 0 ? moves[i - 1] : undefined;
+      if (!move?.san) {
+        graphMeta.push(undefined);
+      } else {
+        const col = colorOfPly(i);
+        const sanText = `${Math.ceil(i / 2)}${col === "white" ? "." : "…"} ${formatSan(move.san, notation, col)}`;
+        const scoreLabel = score ? formatScore(score) : undefined;
+        graphMeta.push({
+          san: sanText,
+          ...(scoreLabel ? { scoreLabel } : {}),
+        });
+      }
+    }
+    return { whiteWin, evaluated, meta: graphMeta };
+  }, [fens, positions, moves, notation]);
+
   return (
     <div className="mx-auto flex min-h-0 w-full max-w-5xl flex-1 flex-col gap-2 overflow-hidden md:grid md:flex-initial md:grid-cols-[minmax(0,1fr)_minmax(20rem,25rem)] md:items-center md:gap-6 md:overflow-visible md:py-4">
-      <div className="min-w-0 shrink-0">
-        <div className="mx-auto w-full max-w-[min(100%,calc(100dvh-22rem))] md:max-w-[min(100%,calc(100dvh-9.5rem),38rem)]">
+      <div className="min-w-0 shrink-0 space-y-1.5">
+        <div className="mx-auto w-full max-w-[min(100%,calc(100dvh-25rem))] md:max-w-[min(100%,calc(100dvh-11rem),38rem)]">
           {meta && <ScanningPlayerBar player={meta[topColor]} color={topColor} />}
           <div className="flex gap-1.5 md:gap-2">
             <EvalBar
@@ -113,10 +217,79 @@ export function ReviewProgress() {
                 turnColor={previewTurn}
                 lastMove={lastMove}
                 check={previewCheck}
+                animationMs={isNonAdjacentJump ? 0 : undefined}
               />
             </div>
           </div>
           {meta && <ScanningPlayerBar player={meta[orientation]} color={orientation} />}
+        </div>
+
+        <div className="mx-auto w-full max-w-[min(100%,calc(100dvh-25rem))] space-y-1.5 md:max-w-[min(100%,calc(100dvh-11rem),38rem)]">
+          <nav
+            aria-label={tr("mobileControls")}
+            className="flex flex-nowrap items-center justify-center gap-0.5 rounded-xl border bg-card/90 p-0.5 shadow-xs"
+          >
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 min-w-0 flex-1 px-0 md:flex-initial md:px-2.5"
+              aria-label={tr("start")}
+              disabled={previewIndex <= 0}
+              onClick={() => goTo(0)}
+            >
+              <ChevronFirst />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 min-w-0 flex-1 px-0 md:flex-initial md:px-2.5"
+              aria-label={tr("previous")}
+              disabled={previewIndex <= 0}
+              onClick={() => goTo(previewIndex - 1)}
+            >
+              <ChevronLeft />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 min-w-0 flex-1 px-0 md:flex-initial md:px-2.5"
+              aria-label={tr("next")}
+              disabled={previewIndex >= maxPly}
+              onClick={() => goTo(previewIndex + 1)}
+            >
+              <ChevronRight />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 min-w-0 flex-1 px-0 md:flex-initial md:px-2.5"
+              aria-label={tr("end")}
+              disabled={previewIndex >= maxPly}
+              onClick={() => goTo(maxPly)}
+            >
+              <ChevronLast />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 min-w-0 flex-1 px-0 md:flex-initial md:px-2.5"
+              aria-label={tr("flip")}
+              onClick={() => setOrientation(orientation === "white" ? "black" : "white")}
+            >
+              <FlipVertical2 />
+            </Button>
+          </nav>
+
+          {liveGraph && (
+            <EvalGraph
+              whiteWin={liveGraph.whiteWin}
+              evaluated={liveGraph.evaluated}
+              index={previewIndex}
+              onSeek={goTo}
+              meta={liveGraph.meta}
+              compact
+            />
+          )}
         </div>
       </div>
 

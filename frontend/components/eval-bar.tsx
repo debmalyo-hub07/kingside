@@ -49,7 +49,7 @@ export function EvalBar({
     >
       <div
         className={cn(
-          "absolute inset-x-0 bg-[var(--eval-white-bg)] transition-[height] duration-500 ease-out motion-reduce:transition-none",
+          "absolute inset-x-0 bg-[var(--eval-white-bg)] transition-[height] duration-[220ms] ease-out motion-reduce:transition-none",
           flipped ? "top-0" : "bottom-0",
         )}
         style={{ height: `${white}%` }}

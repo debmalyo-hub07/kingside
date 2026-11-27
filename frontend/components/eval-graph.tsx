@@ -133,6 +133,7 @@ export function resolveGraphIndex(params: {
 /** White-POV win % smooth area chart. Click/drag, click markers, or use arrow keys to seek. */
 export function EvalGraph({
   whiteWin,
+  evaluated,
   index,
   onSeek,
   markers = [],
@@ -141,6 +142,8 @@ export function EvalGraph({
   className,
 }: {
   whiteWin: readonly number[];
+  /** Optional per-ply flag when streaming live evaluations so unevaluated plies are not bridged. */
+  evaluated?: readonly boolean[] | undefined;
   index: number;
   onSeek: (index: number) => void;
   markers?: GraphMarker[];
@@ -158,19 +161,49 @@ export function EvalGraph({
     () => whiteWin.map((w, i) => [round((i / last) * 100), round(clamp(100 - w, 0, 100))] as const),
     [whiteWin, last],
   );
-  const { linePath, areaPath } = useMemo(() => buildSmoothGraphPaths(pts), [pts]);
+  const { segments, singlePts } = useMemo(() => {
+    if (!evaluated) {
+      return {
+        segments: [{ startIdx: 0, ...buildSmoothGraphPaths(pts) }],
+        singlePts: [] as { idx: number; pt: readonly [number, number] }[],
+      };
+    }
+    const segs: { startIdx: number; linePath: string; areaPath: string }[] = [];
+    const singles: { idx: number; pt: readonly [number, number] }[] = [];
+    let runStart = 0;
+    let run: (readonly [number, number])[] = [];
+    const flush = () => {
+      if (run.length >= 2) segs.push({ startIdx: runStart, ...buildSmoothGraphPaths(run) });
+      else if (run.length === 1 && run[0]) singles.push({ idx: runStart, pt: run[0] });
+      run = [];
+    };
+    pts.forEach((pt, i) => {
+      if (evaluated[i]) {
+        if (run.length === 0) runStart = i;
+        run.push(pt);
+      } else {
+        flush();
+      }
+    });
+    flush();
+    return { segments: segs, singlePts: singles };
+  }, [pts, evaluated]);
   const markerMap = useMemo(() => new Map(markers.map((m) => [m.index, m])), [markers]);
 
   const activePt = pts[index] ?? [0, 50];
+  const activeEvaluated = evaluated ? Boolean(evaluated[index]) : true;
   const tipIndex = hoverIndex ?? (scrubbing ? index : null);
   const tipPt = tipIndex !== null ? pts[tipIndex] : null;
+  const tipEvaluated = tipIndex !== null ? (evaluated ? Boolean(evaluated[tipIndex]) : true) : false;
   const tipMeta = tipIndex !== null ? meta?.[tipIndex] : undefined;
   const tipMarker = tipIndex !== null ? markerMap.get(tipIndex) : undefined;
   const tipSan = tipMeta?.san ?? tipMarker?.san;
   const tipScore =
     tipMeta?.scoreLabel ??
     tipMarker?.scoreLabel ??
-    (tipIndex !== null ? t("graphWinPct", { pct: Math.round(whiteWin[tipIndex] ?? 50) }) : "");
+    (tipIndex !== null && tipEvaluated
+      ? t("graphWinPct", { pct: Math.round(whiteWin[tipIndex] ?? 50) })
+      : "");
   const tipClass = tipMeta?.classification ?? tipMarker?.label;
 
   const resolveIndexFromPointer = (clientX: number, snapMarkers: boolean): number => {
@@ -198,7 +231,12 @@ export function EvalGraph({
           className={cn("block w-full", compact ? "h-9 md:h-20" : "h-20")}
           aria-hidden
         >
-          {areaPath && <path d={areaPath} fill="var(--eval-graph-white)" />}
+          {segments.map(
+            (seg) =>
+              seg.areaPath && (
+                <path key={`area-${seg.startIdx}`} d={seg.areaPath} fill="var(--eval-graph-white)" />
+              ),
+          )}
           <line
             x1="0"
             y1="50"
@@ -209,15 +247,22 @@ export function EvalGraph({
             strokeDasharray="2 2"
             vectorEffect="non-scaling-stroke"
           />
-          {linePath && (
-            <path
-              d={linePath}
-              fill="none"
-              stroke="var(--eval-graph-stroke)"
-              strokeWidth="1.5"
-              vectorEffect="non-scaling-stroke"
-            />
+          {segments.map(
+            (seg) =>
+              seg.linePath && (
+                <path
+                  key={`line-${seg.startIdx}`}
+                  d={seg.linePath}
+                  fill="none"
+                  stroke="var(--eval-graph-stroke)"
+                  strokeWidth="1.5"
+                  vectorEffect="non-scaling-stroke"
+                />
+              ),
           )}
+          {singlePts.map(({ idx, pt }) => (
+            <circle key={`pt-${idx}`} cx={pt[0]} cy={pt[1]} r="1.4" fill="var(--eval-graph-stroke)" />
+          ))}
           {markers.map((m) => {
             const p = pts[m.index];
             return p ? (
@@ -274,11 +319,13 @@ export function EvalGraph({
           );
         })}
 
-        <span
-          aria-hidden
-          className="pointer-events-none absolute size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-background bg-primary shadow-sm"
-          style={{ left: `${activePt[0]}%`, top: `${activePt[1]}%` }}
-        />
+        {activeEvaluated && (
+          <span
+            aria-hidden
+            className="pointer-events-none absolute size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-background bg-primary shadow-sm"
+            style={{ left: `${activePt[0]}%`, top: `${activePt[1]}%` }}
+          />
+        )}
       </div>
 
       {tipIndex !== null && tipPt && (

@@ -11,6 +11,13 @@ import { DEFAULT_PIECE_SET, type PieceSetId } from "./piece-sets";
 export const DEPTH_OPTIONS = [12, 16, 20, 24, 28, 32, 40, null] as const;
 export type EngineDepth = (typeof DEPTH_OPTIONS)[number];
 
+export type HandleSite = "lichess" | "chesscom";
+
+export interface RememberedHandle {
+  site: HandleSite;
+  name: string;
+}
+
 export interface Settings {
   boardTheme: BoardThemeId;
   pieceSet: PieceSetId;
@@ -47,10 +54,15 @@ export interface Settings {
   reviewMetric: "accuracy" | "precision";
   /** Usernames this device looked up for review: their side of a game is "me" (insights, drills). */
   myNames: string[];
+  /** Site-qualified handles remembered from /review lookups (`{ site, name }`). */
+  recentHandles: RememberedHandle[];
 }
 
 interface SettingsStore extends Settings {
   update: (patch: Partial<Settings>) => void;
+  rememberHandle: (site: HandleSite, name: string) => void;
+  removeHandle: (site: HandleSite, name: string) => void;
+  clearRememberedHandles: () => void;
   reset: () => void;
 }
 
@@ -78,6 +90,7 @@ export const DEFAULT_SETTINGS: Settings = {
   reviewMoveTimes: true,
   reviewMetric: "accuracy",
   myNames: [],
+  recentHandles: [],
 };
 
 // localStorage may throw (private mode, blocked storage); fall back to in-memory defaults.
@@ -102,6 +115,29 @@ export const useSettings = create<SettingsStore>()(
     (set) => ({
       ...DEFAULT_SETTINGS,
       update: (patch) => set(patch),
+      rememberHandle: (site, rawName) =>
+        set((s) => {
+          const name = rawName.trim();
+          if (!name) return s;
+          const lower = name.toLowerCase();
+          const nextHandles = [
+            { site, name },
+            ...s.recentHandles.filter((h) => !(h.site === site && h.name.toLowerCase() === lower)),
+          ].slice(0, 6);
+          const nextNames = [name, ...s.myNames.filter((n) => n.toLowerCase() !== lower)].slice(0, 6);
+          return { recentHandles: nextHandles, myNames: nextNames };
+        }),
+      removeHandle: (site, rawName) =>
+        set((s) => {
+          const lower = rawName.trim().toLowerCase();
+          const nextHandles = s.recentHandles.filter(
+            (h) => !(h.site === site && h.name.toLowerCase() === lower),
+          );
+          const stillReferenced = nextHandles.some((h) => h.name.toLowerCase() === lower);
+          const nextNames = stillReferenced ? s.myNames : s.myNames.filter((n) => n.toLowerCase() !== lower);
+          return { recentHandles: nextHandles, myNames: nextNames };
+        }),
+      clearRememberedHandles: () => set({ recentHandles: [], myNames: [] }),
       reset: () => set(DEFAULT_SETTINGS),
     }),
     // Rehydrated by <SettingsHydrator> after mount so the server render matches the first client render.

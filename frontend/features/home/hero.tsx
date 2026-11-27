@@ -1,12 +1,9 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 "use client";
 
-import { Cpu, FileSearch, LayoutGrid, Lock, Sparkles, UserRound } from "lucide-react";
+import { Cpu, LayoutGrid, Lock, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
-import { listReviews, type SavedReview } from "@/lib/local-db";
-import { useSettings } from "@/lib/settings-store";
 import { HeroBoard } from "./hero-board";
 import { QuickStart } from "./quick-start";
 
@@ -15,52 +12,6 @@ const BADGES = [
   { icon: Cpu, key: "engine" },
   { icon: Lock, key: "noAccount" },
 ] as const;
-
-function HeroResumeBar() {
-  const t = useTranslations("home.hero");
-  const myNames = useSettings((s) => s.myNames);
-  const [latestReview, setLatestReview] = useState<SavedReview | null>(null);
-
-  useEffect(() => {
-    let active = true;
-    void listReviews().then((rows) => {
-      if (!active) return;
-      const withPgn = rows.find((r) => Boolean(r.pgn));
-      if (withPgn) setLatestReview(withPgn);
-    });
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  if (myNames.length === 0 && !latestReview) return null;
-
-  return (
-    <div className="mt-2.5 flex flex-wrap items-center gap-1.5 px-1 text-xs">
-      {latestReview && (
-        <Link
-          href={`/review?game=${encodeURIComponent(latestReview.gameHash)}`}
-          className="inline-flex min-h-6 items-center gap-1.5 rounded-full border border-primary/35 bg-primary/10 px-2.5 py-0.5 font-medium text-primary transition hover:bg-primary/20"
-        >
-          <FileSearch className="size-3" aria-hidden />
-          <span className="max-w-52 truncate">
-            {t("resumeReview", { white: latestReview.white, black: latestReview.black })}
-          </span>
-        </Link>
-      )}
-      {myNames.slice(0, 2).map((name) => (
-        <Link
-          key={name}
-          href={`/review?site=lichess&user=${encodeURIComponent(name)}`}
-          className="inline-flex min-h-6 items-center gap-1 rounded-full border border-border bg-secondary/70 px-2.5 py-0.5 font-medium text-muted-foreground transition hover:border-primary/40 hover:text-foreground"
-        >
-          <UserRound className="size-3 text-primary" aria-hidden />
-          <span>{t("recentPlayer", { name })}</span>
-        </Link>
-      ))}
-    </div>
-  );
-}
 
 export function Hero() {
   const t = useTranslations("home.hero");
@@ -99,7 +50,6 @@ export function Hero() {
         </p>
         <div className={cls(3, "mt-8 max-w-xl")} style={item(3).style}>
           <QuickStart />
-          <HeroResumeBar />
           <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 px-1 text-sm text-muted-foreground">
             <Link href="/editor" className="inline-flex items-center gap-1 hover:text-primary">
               <LayoutGrid className="size-3.5" /> {t("setup")}

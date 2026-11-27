@@ -104,7 +104,9 @@ export function SettingsView() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [counts, setCounts] = useState<{ evals: number; games: number } | null>(null);
-  const [confirm, setConfirm] = useState<null | "evals" | "games" | "training" | "settings">(null);
+  const [confirm, setConfirm] = useState<null | "evals" | "games" | "training" | "usernames" | "settings">(
+    null,
+  );
   const [done, setDone] = useState<string | null>(null);
   const [licensesOpen, setLicensesOpen] = useState(false);
   const sourceUrl = safeHttpUrl(process.env.NEXT_PUBLIC_SOURCE_URL);
@@ -139,6 +141,7 @@ export function SettingsView() {
       await db?.drills.clear().catch(() => undefined);
       await db?.practice.clear().catch(() => undefined);
     }
+    if (confirm === "usernames") s.clearRememberedHandles();
     if (confirm === "settings") s.reset();
     setDone(t(`data.done.${confirm ?? "settings"}`));
     setConfirm(null);
@@ -428,6 +431,9 @@ export function SettingsView() {
           </Button>
           <Button size="sm" variant="outline" onClick={() => setConfirm("training")}>
             <Trash2 /> {t("data.clearTraining")}
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => setConfirm("usernames")}>
+            <Trash2 /> {t("data.clearUsernames")}
           </Button>
           <Button size="sm" variant="outline" onClick={() => setConfirm("settings")}>
             <RotateCcw /> {t("data.resetSettings")}

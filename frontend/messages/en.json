@@ -77,7 +77,7 @@
   },
   "footer": {
     "tagline": "Independent, open-source chess analysis studio built for focused study.",
-    "license": "Debmalyo Barman · Kingside · AGPL-3.0-or-later",
+    "license": "Kingside · AGPL-3.0-or-later",
     "credits": "Engine: Stockfish 19 (GPL-3.0) · Piece sets by their authors · Explorer and tablebase data from lichess.org",
     "engineLabel": "Engine:",
     "piecesLabel": "Piece sets by their authors",
@@ -316,7 +316,7 @@
     },
     "licenses": {
       "title": "Open Source & Engine Licenses",
-      "copyright": "Copyright © 2026 Debmalyo Barman · Kingside · AGPL-3.0-or-later",
+      "copyright": "Kingside · AGPL-3.0-or-later",
       "summary": "Kingside is free, open-source software built on GPL/AGPL chess engines, chess rules libraries, and community data.",
       "toggleShow": "Show third-party & engine attributions",
       "toggleHide": "Hide third-party & engine attributions",
@@ -367,17 +367,20 @@
         "evals": "Clear all cached engine evaluations?",
         "games": "Delete every saved game on this device? This can't be undone.",
         "settings": "Reset all settings to their defaults?",
-        "training": "Delete review summaries (insights), drills from your games and practice progress?"
+        "training": "Delete review summaries (insights), drills from your games and practice progress?",
+        "usernames": "Clear all remembered usernames on this device?"
       },
       "done": {
         "evals": "Engine cache cleared.",
         "games": "Saved games deleted.",
         "settings": "Settings reset.",
-        "training": "Insights, drills and practice progress cleared."
+        "training": "Insights, drills and practice progress cleared.",
+        "usernames": "Remembered usernames cleared."
       },
       "yes": "Yes",
       "cancel": "Cancel",
-      "clearTraining": "Clear insights, drills and practice progress"
+      "clearTraining": "Clear insights, drills and practice progress",
+      "clearUsernames": "Clear remembered usernames"
     },
     "review": {
       "title": "Match Analysis"
@@ -803,7 +806,9 @@
       "recentOf": "Recent games of {name}",
       "noneFound": "No standard games found for {name}.",
       "recentUsernames": "Recent:",
-      "useUsername": "Find recent games for {name}"
+      "useUsername": "Find recent games for {name} ({site})",
+      "removeUsername": "Remove {name}",
+      "clearUsernames": "Clear"
     },
     "progress": {
       "title": "Reviewing your game…",
@@ -1261,8 +1266,6 @@
       "subtitle": "Stockfish 19 calculation, move-by-move Match Analysis, curated endgames, and ten bots — running locally right in your browser.",
       "cta": "Open analysis board",
       "setup": "Set up a position",
-      "resumeReview": "Continue: {white} vs {black}",
-      "recentPlayer": "Games: {name}",
       "badges": {
         "free": "Open source & offline-ready",
         "engine": "Stockfish 19 in your browser",

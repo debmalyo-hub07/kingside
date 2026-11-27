@@ -28,6 +28,7 @@ import {
 } from "@/lib/local-db";
 import { countBookPlies, loadOpenings, type Opening, openingOf } from "@/lib/openings";
 import { useSettings } from "@/lib/settings-store";
+import { safeHttpUrl } from "@/lib/utils";
 import { buildHydratedReview } from "./review-hydrate";
 
 export interface PlayerInfo {
@@ -282,7 +283,7 @@ function header(headers: Map<string, string>, key: string): string | null {
 }
 
 function siteUrl(site: string | null): string | null {
-  return site && /^https?:\/\//.test(site) ? site : null;
+  return safeHttpUrl(site ?? undefined);
 }
 
 function deriveTimeClass(timeControl: string): string | null {
@@ -330,7 +331,7 @@ function parseReviewPgn(
     black: meta?.black ?? { name: blackName, rating: rating("BlackElo") ?? saved?.blackRating ?? null },
     result: meta?.result ?? header(h, "Result") ?? saved?.result ?? "*",
     date: meta?.date ?? header(h, "Date") ?? header(h, "UTCDate") ?? saved?.date ?? null,
-    url: meta?.url ?? siteUrl(header(h, "Site")),
+    url: meta?.url ?? siteUrl(header(h, "Site")) ?? siteUrl(header(h, "Link")),
     timeClass: meta?.timeClass ?? deriveTimeClass(h.get("TimeControl") ?? "") ?? saved?.timeClass ?? null,
     me,
   };

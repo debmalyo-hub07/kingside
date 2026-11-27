@@ -50,6 +50,8 @@ export interface ChessBoardProps {
   onReady?: (api: Api) => void;
   /** Play a move sound whenever the shown position changes by a move. */
   sound?: boolean;
+  /** Optional per-update animation override (e.g. `0` on non-adjacent jumps). */
+  animationMs?: number | undefined;
   /** Accessible name of the board (defaults to the translated "Chess board"). */
   label?: string;
   className?: string;
@@ -64,7 +66,8 @@ export function ChessBoard(props: ChessBoardProps) {
   const handlers = useRef(props);
   handlers.current = props;
 
-  const { boardTheme: themeId, pieceSet, coordinates, animationMs } = useSettings();
+  const { boardTheme: themeId, pieceSet, coordinates, animationMs: settingsAnimationMs } = useSettings();
+  const effectiveAnimationMs = props.animationMs ?? settingsAnimationMs;
   const t = useTranslations("board");
   const theme = boardTheme(themeId);
 
@@ -77,7 +80,7 @@ export function ChessBoard(props: ChessBoardProps) {
       lastMove: props.lastMove,
       check: props.check ?? false,
       coordinates,
-      animation: { enabled: animationMs > 0, duration: animationMs },
+      animation: { enabled: effectiveAnimationMs > 0, duration: effectiveAnimationMs },
       // Never viewOnly: chessground binds input handlers only at creation, so a board that starts
       // read-only could never become interactive. Read-only = nothing movable instead.
       viewOnly: false,
@@ -112,7 +115,7 @@ export function ChessBoard(props: ChessBoardProps) {
     props.free,
     props.autoShapes,
     coordinates,
-    animationMs,
+    effectiveAnimationMs,
   ]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: created once; later prop changes go through api.set below.

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 "use client";
 
-import { ArrowRight, ClipboardPaste, Loader2, Search, Upload } from "lucide-react";
+import { ArrowRight, ClipboardPaste, Loader2, Search, Upload, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -71,7 +71,10 @@ export function ReviewImport() {
   const tr = useTranslations("review");
   const apiError = useApiErrorText();
   const positionError = usePositionErrorText();
-  const myNames = useSettings((s) => s.myNames);
+  const recentHandles = useSettings((s) => s.recentHandles);
+  const rememberHandle = useSettings((s) => s.rememberHandle);
+  const removeHandle = useSettings((s) => s.removeHandle);
+  const clearRememberedHandles = useSettings((s) => s.clearRememberedHandles);
   const {
     preset,
     setPreset,
@@ -107,18 +110,15 @@ export function ReviewImport() {
           `/api/import/${source}/${encodeURIComponent(name)}?max=25`,
         );
         setImportState({ importSite: source, importUser: name, importSearched: name, fetchedGames: loaded });
-        // Remember the name: its side of every game is "you" in insights and drills.
-        const known = useSettings.getState().myNames;
-        if (!known.some((n) => n.toLowerCase() === name.toLowerCase())) {
-          useSettings.getState().update({ myNames: [name, ...known].slice(0, 5) });
-        }
+        // Remember `{ site, name }`: its side of every game is "you" in insights and drills.
+        rememberHandle(source, name);
       } catch (err) {
         setError(apiError(err));
       } finally {
         setLoading(false);
       }
     },
-    [tab, username, t, apiError, setImportState],
+    [tab, username, t, apiError, setImportState, rememberHandle],
   );
 
   // Execute pending lookup requested via /review?site=...&user=...
@@ -128,16 +128,16 @@ export function ReviewImport() {
     if (req) void search(undefined, req.site, req.user);
   }, [pendingLookup, consumePendingLookup, search]);
 
-  // Pre-fill the most recent remembered handle when opening /review fresh without a typed handle.
+  // Pre-fill the most recent remembered handle for this site when opening /review fresh without a typed handle.
   useEffect(() => {
     if (prefilledRef.current) return;
-    if (pendingLookup || username || myNames.length === 0 || tab === "pgn") return;
-    const first = myNames[0];
-    if (first) {
+    if (pendingLookup || username || tab === "pgn") return;
+    const match = recentHandles.find((h) => h.site === tab);
+    if (match) {
       prefilledRef.current = true;
-      setImportState({ importUser: first });
+      setImportState({ importUser: match.name });
     }
-  }, [pendingLookup, username, myNames, tab, setImportState]);
+  }, [pendingLookup, username, recentHandles, tab, setImportState]);
 
   const begin = (text: string, meta?: Parameters<typeof start>[1]) => {
     try {
@@ -240,33 +240,56 @@ export function ReviewImport() {
           </form>
         )}
 
-        {tab !== "pgn" && myNames.length > 0 && (
+        {tab !== "pgn" && recentHandles.length > 0 && (
           <div className="mt-3 flex flex-wrap items-center gap-1.5 text-xs">
             <span className="text-muted-foreground">{t("recentUsernames")}</span>
-            {myNames.map((name) => {
-              const active = username.trim().toLowerCase() === name.toLowerCase();
+            {recentHandles.map((h) => {
+              const active = tab === h.site && username.trim().toLowerCase() === h.name.toLowerCase();
+              const siteLabel = t(`tabs.${h.site}`);
               return (
-                <button
-                  key={name}
-                  type="button"
-                  onClick={() => {
-                    prefilledRef.current = true;
-                    setImportState({ importUser: name });
-                    void search(undefined, tab, name);
-                  }}
-                  aria-label={t("useUsername", { name })}
-                  aria-pressed={active}
+                <div
+                  key={`${h.site}:${h.name.toLowerCase()}`}
                   className={cn(
-                    "rounded-full border px-2.5 py-1 font-medium transition",
+                    "inline-flex items-center overflow-hidden rounded-full border transition",
                     active
                       ? "border-primary bg-primary/15 text-foreground"
                       : "bg-secondary/60 text-muted-foreground hover:border-primary/50 hover:text-foreground",
                   )}
                 >
-                  {name}
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      prefilledRef.current = true;
+                      setImportState({ importSite: h.site, importUser: h.name });
+                      void search(undefined, h.site, h.name);
+                    }}
+                    aria-label={t("useUsername", { name: h.name, site: siteLabel })}
+                    aria-pressed={active}
+                    className="inline-flex items-center gap-1.5 py-1 pr-1.5 pl-2.5 font-medium"
+                  >
+                    <span>{h.name}</span>
+                    <span className="rounded bg-background/70 px-1 py-px text-[10px] font-normal text-muted-foreground">
+                      {siteLabel}
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => removeHandle(h.site, h.name)}
+                    aria-label={t("removeUsername", { name: h.name })}
+                    className="grid size-6 place-items-center text-muted-foreground transition hover:bg-destructive/15 hover:text-destructive"
+                  >
+                    <X className="size-3" aria-hidden />
+                  </button>
+                </div>
               );
             })}
+            <button
+              type="button"
+              onClick={clearRememberedHandles}
+              className="ml-1 rounded-full px-2 py-1 text-xs font-medium text-muted-foreground underline-offset-2 transition hover:text-foreground hover:underline"
+            >
+              {t("clearUsernames")}
+            </button>
           </div>
         )}
 
